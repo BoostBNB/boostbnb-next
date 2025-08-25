@@ -1,0 +1,378 @@
+{
+    "integration": {
+      "limitations": {
+        "availableStatuses": []
+      },
+      "bookingCom": {
+        "invalidCreditCards": [],
+        "reports": []
+      },
+      "_id": "563e0b6a08a2710e00057b82",
+      "platform": "string"
+    },
+    "guestyFeeDetails": {
+      "commission": 0,
+      "feeMinimum": 0,
+      "fee": 0,
+      "feeUsd": 0,
+      "isMinimumFee": true,
+      "isMaximumFee": true,
+      "planItems": []
+    },
+    "review": {
+      "shouldReview": true
+    },
+    "atTimeOfConfirmation": {
+      "snapshotCreated": true,
+      "channelCommission": {
+        "useAccountSettings": true,
+        "_id": "563e0b6a08a2710e00057b82",
+        "manual": []
+      },
+      "taxes": [
+        {
+          "appliedOnFees": "string",
+          "appliedByDefaultOnChannels": [],
+          "_id": "563e0b6a08a2710e00057b82",
+          "name": "string",
+          "units": "string",
+          "quantifier": "string",
+          "amount": 0,
+          "appliedToAllFees": true,
+          "type": "string"
+        }
+      ],
+      "monthlyPriceFactor": 0,
+      "weeklyPriceFactor": 0,
+      "useAccountRevenueShare": true
+    },
+    "flag": true,
+    "accountingEnabled": true,
+    "isBMApplied": true,
+    "confirmedPreBookings": [],
+    "pulledByDailySync": true,
+    "manuallyCreated": true,
+    "_id": "563e0b6a08a2710e00057b82",
+    "status": "string",
+    "checkIn": "2021-08-17T07:00:00.000Z",
+    "checkOut": "2021-08-17T07:00:00.000Z",
+    "nightsCount": 0,
+    "guestsCount": 0,
+    "money": {
+      "altered": true,
+      "invoiceItems": [
+        {
+          "_id": "563e0b6a08a2710e00057b82",
+          "title": "string",
+          "amount": 0,
+          "currency": "string",
+          "type": "string",
+          "isLocked": true,
+          "isTax": true,
+          "normalType": "string",
+          "isAutoAdditionalFee": true,
+          "secondIdentifier": "string"
+        }
+      ],
+      "payments": [
+        {
+          "authenticationRequiredData": {
+            "lastAuthMsgSentDate": "2021-08-16T08:38:20.280Z",
+            "authenticationUrl": "string"
+          },
+          "paymentMethodStatus": "string",
+          "isAuthorizationHold": true,
+          "status": "string",
+          "refunds": [],
+          "authorizationHoldCaptures": [],
+          "createdAt": "2021-08-16T08:38:20.280Z",
+          "attempts": [
+            {
+              "createdAt": "2021-08-16T08:38:20.280Z",
+              "_id": "563e0b6a08a2710e00057b82",
+              "status": "string",
+              "error": "string",
+              "payload": {
+                "charge": "string",
+                "code": "string",
+                "decline_code": "string",
+                "doc_url": "string",
+                "message": "string",
+                "payment_intent": {
+                  "id": "563e0b6a08a2710e00057b82",
+                  "object": "string",
+                  "amount": 0,
+                  "amount_capturable": 0,
+                  "amount_received": 0,
+                  "application": "string",
+                  "capture_method": "string",
+                  "charges": {
+                    "object": "string",
+                    "data": [
+                      {
+                        "id": "string",
+                        "object": "string",
+                        "amount": 0,
+                        "amount_captured": 0,
+                        "amount_refunded": 0,
+                        "application": "string",
+                        "billing_details": {
+                          "address": {
+                            "city": "string",
+                            "country": "string",
+                            "line1": "string",
+                            "line2": "string",
+                            "postal_code": "string",
+                            "state": "string"
+                          },
+                          "email": "string",
+                          "name": "string",
+                          "phone": "string"
+                        },
+                        "calculated_statement_descriptor": "string",
+                        "captured": true,
+                        "created": 0,
+                        "currency": "string",
+                        "customer": "string",
+                        "description": "string",
+                        "disputed": true,
+                        "failure_code": "string",
+                        "failure_message": "string",
+                        "livemode": true,
+                        "metadata": {
+                          "accountId": "563e0b6a08a2710e00057b82",
+                          "confirmationCode": "string",
+                          "reservationId": "563e0b6a08a2710e00057b82",
+                          "OTA": "string",
+                          "listingId": "563e0b6a08a2710e00057b82"
+                        },
+                        "outcome": {
+                          "network_status": "string",
+                          "reason": "string",
+                          "risk_level": "string",
+                          "risk_score": 0,
+                          "seller_message": "string",
+                          "type": "string"
+                        },
+                        "paid": true,
+                        "payment_intent": "string",
+                        "payment_method": "string",
+                        "payment_method_details": {
+                          "card": {
+                            "brand": "string",
+                            "checks": {
+                              "cvc_check": "string"
+                            },
+                            "country": "string",
+                            "exp_month": 0,
+                            "exp_year": 0,
+                            "fingerprint": "string",
+                            "funding": "string",
+                            "last4": "string",
+                            "network": "string"
+                          },
+                          "type": "string"
+                        },
+                        "refunded": true,
+                        "refunds": {
+                          "object": "string",
+                          "data": [],
+                          "has_more": true,
+                          "total_count": 0,
+                          "url": "string"
+                        },
+                        "statement_descriptor": "string",
+                        "status": "string"
+                      }
+                    ],
+                    "has_more": true,
+                    "total_count": 0,
+                    "url": "string"
+                  },
+                  "client_secret": "string",
+                  "confirmation_method": "string",
+                  "created": 0,
+                  "currency": "string",
+                  "customer": "string",
+                  "description": "string",
+                  "livemode": true,
+                  "metadata": {
+                    "accountId": "563e0b6a08a2710e00057b82",
+                    "confirmationCode": "string",
+                    "reservationId": "563e0b6a08a2710e00057b82",
+                    "OTA": "string",
+                    "listingId": "563e0b6a08a2710e00057b82"
+                  },
+                  "next_action": {
+                    "type": "string",
+                    "use_stripe_sdk": {
+                      "type": "string",
+                      "merchant": "string",
+                      "three_d_secure_2_source": "string",
+                      "directory_server_name": "string",
+                      "server_transaction_id": "string",
+                      "three_ds_method_url": "string",
+                      "three_ds_optimizations": "string",
+                      "directory_server_encryption": {
+                        "directory_server_id": "string",
+                        "algorithm": "string",
+                        "certificate": "string",
+                        "root_certificate_authorities": []
+                      }
+                    }
+                  },
+                  "payment_method": "string",
+                  "payment_method_options": {
+                    "card": {
+                      "request_three_d_secure": "string"
+                    }
+                  },
+                  "payment_method_types": [],
+                  "statement_descriptor": "string",
+                  "status": "string"
+                },
+                "payment_method": {
+                  "id": "string",
+                  "object": "string",
+                  "billing_details": {
+                    "address": {
+                      "city": "string",
+                      "country": "string",
+                      "line1": "string",
+                      "line2": "string",
+                      "postal_code": "string",
+                      "state": "string"
+                    },
+                    "email": "string",
+                    "name": "string",
+                    "phone": "string"
+                  },
+                  "card": {
+                    "brand": "string",
+                    "checks": {
+                      "cvc_check": "string"
+                    },
+                    "country": "string",
+                    "exp_month": 0,
+                    "exp_year": 0,
+                    "fingerprint": "string",
+                    "funding": "string",
+                    "last4": "string",
+                    "networks": {
+                      "available": []
+                    },
+                    "three_d_secure_usage": {
+                      "supported": true
+                    }
+                  },
+                  "created": 0,
+                  "customer": "string",
+                  "livemode": true,
+                  "type": "string"
+                },
+                "type": "string",
+                "statusCode": 0,
+                "requestId": "string"
+              }
+            }
+          ],
+          "receiptTargets": [],
+          "_id": "563e0b6a08a2710e00057b82",
+          "amount": 0,
+          "shouldBePaidAt": "2021-08-16T08:38:20.280Z",
+          "paymentMethodId": "563e0b6a08a2710e00057b82",
+          "guestId": "563e0b6a08a2710e00057b82",
+          "currency": "string"
+        }
+      ],
+      "autoPaymentsPolicy": [],
+      "currency": "string",
+      "paymentProviderIds": [],
+      "fareAccommodationAdjustment": 0,
+      "fareAccommodationDiscount": 0,
+      "fareAccommodation": 0,
+      "fareAccommodationAdjusted": 0,
+      "fareCleaning": 0,
+      "hostServiceFee": 0,
+      "hostServiceFeeTax": 0,
+      "hostServiceFeeIncTax": 0,
+      "subTotalPrice": 0,
+      "hostPayout": 0,
+      "hostPayoutUsd": 0,
+      "totalTaxes": 0,
+      "totalRefunded": 0,
+      "totalPaid": 0,
+      "paymentsDue": 0,
+      "balanceDue": 0,
+      "isFullyPaid": true,
+      "useAccountRevenueShare": true,
+      "netIncomeFormula": "string",
+      "netIncome": 0,
+      "commissionFormula": "string",
+      "commission": 0,
+      "commissionTaxPercentage": 0,
+      "commissionTax": 0,
+      "commissionIncTax": 0,
+      "ownerRevenueFormula": "string",
+      "ownerRevenue": 0,
+      "currencyConversionRateToAccount": 0,
+      "isTouchedPayments": true
+    },
+    "listingId": "563e0b6a08a2710e00057b82",
+    "checkInDateLocalized": "string",
+    "checkOutDateLocalized": "string",
+    "accountId": "563e0b6a08a2710e00057b82",
+    "guestId": "563e0b6a08a2710e00057b82",
+    "source": "string",
+    "confirmationCode": "string",
+    "mtl": {
+      "assigned": true,
+      "_id": "563e0b6a08a2710e00057b82"
+    },
+    "isReturningGuest": true,
+    "confirmedAt": "2021-08-17T07:00:00.000Z",
+    "importedAt": "2021-08-17T07:00:00.000Z",
+    "additionalFeesAtCreation": [
+      {
+        "automationSources": [],
+        "_id": "563e0b6a08a2710e00057b82",
+        "isPercentage": true,
+        "isAutomated": true,
+        "name": "string",
+        "type": "string",
+        "value": 0,
+        "accountId": "563e0b6a08a2710e00057b82",
+        "multiplier": "string",
+        "targetFee": "string"
+      }
+    ],
+    "createdAt": "2021-08-17T07:00:00.000Z",
+    "pendingTasks": [],
+    "customFields": [],
+    "lastUpdatedAt": "2021-08-17T07:00:00.000Z",
+    "__v": 0,
+    "conversationId": "563e0b6a08a2710e00057b82",
+    "id": "563e0b6a08a2710e00057b82",
+    "isMidStay": true,
+    "lastStayListingId": "563e0b6a08a2710e00057b82",
+    "stay": {
+      "id": "563e0b6a08a2710e00057b82",
+      "checkInDateLocalized": "string",
+      "checkOutDateLocalized": "string",
+      "eta": "string",
+      "etd": "string",
+      "guestsCount": 0,
+      "unitTypeId": "563e0b6a08a2710e00057b82",
+      "unitId": "563e0b6a08a2710e00057b82",
+      "ratePlanId": "string",
+      "numberOfGuests": {
+        "numberOfAdults": 0,
+        "numberOfChildren": 0,
+        "numberOfInfants": 0,
+        "numberOfPets": 0
+      },
+      "earlyCheckIn": {
+        "blockDay": true
+      }
+    }
+  }

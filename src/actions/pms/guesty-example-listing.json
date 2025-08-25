@@ -1,0 +1,242 @@
+{
+    "_id": "59ac245d27cb310f0017afe3",
+    "accountId": "59ac245d27cb310f0017afe3",
+    "createdAt": "2017-09-03T15:48:45.070Z",
+    "integrations": [
+      {
+        "_id": "5958c7e5884e961000817799",
+        "airbnb2": {
+          "ignored": {
+            "reservations": [],
+            "listings": []
+          },
+          "emailsFromSupport": []
+        },
+        "forwardEmails": {
+          "all": true,
+          "emails": [
+            "string"
+          ]
+        },
+        "active": true,
+        "platform": "string",
+        "listings": [
+          {}
+        ],
+        "complexes": [
+          {}
+        ],
+        "nickname": "naama",
+        "channelId": "string",
+        "activatedAt": "string",
+        "disconnectedAt": "string",
+        "proxyEmail": "string",
+        "incomingEmail": "string",
+        "externalAccountId": "string",
+        "id": "naama@user.guesty.com",
+        "companyName": "string",
+        "fetchRequests": [
+          {
+            "fetchAllListings": true,
+            "externalListingIds": [
+              "string"
+            ],
+            "status": "NOT_STARTED",
+            "createTime": "string",
+            "updateTime": "string",
+            "finishedTime": "string"
+          }
+        ],
+        "status": "NOT_CONNECTED",
+        "migration": {
+          "status": "IN_PROGRESS",
+          "createTime": "string",
+          "updateTime": "string",
+          "finishedTime": "string",
+          "steps": [
+            {}
+          ],
+          "discrepancyStepExecuted": false,
+          "discrepancyResolution": "GUESTY",
+          "listingQuantityDiscrepancyStepExecuted": false,
+          "error": {
+            "at": "string",
+            "code": "string",
+            "message": "string",
+            "raw": {}
+          },
+          "notes": "string",
+          "isRollingBack": false
+        },
+        "userId": "563e0b6a08a2710e00057b85",
+        "accountId": "563e0b6a08a2710e00057b82",
+        "tripAdvisor": {},
+        "homeaway2": {},
+        "bookingCom": {
+          "legalEntityId": "string"
+        },
+        "createdAt": "string",
+        "missingStep": "string",
+        "steps": [
+          {
+            "type": "string",
+            "status": "COMPLETED",
+            "createTime": "string",
+            "updateTime": "string"
+          }
+        ],
+        "newIntegrationBackup": {},
+        "threadIdsMigrated": true,
+        "isDeleted": true,
+        "deletedAt": "string"
+      }
+    ],
+    "isVirtual": true,
+    "nickname": "string",
+    "tags": [
+      "string"
+    ],
+    "isListed": true,
+    "title": "string",
+    "propertyType": "string",
+    "roomType": "string",
+    "bedType": "string",
+    "accommodates": 0,
+    "bedrooms": 0,
+    "areaSquareFeet": 0,
+    "address": {
+      "full": "Kaplan St 2, Ramat Gan, Israel",
+      "lng": 34.8202173,
+      "lat": 32.0695525,
+      "street": "string",
+      "city": "string",
+      "country": "string"
+    },
+    "publishedAddress": {
+      "full": "Kaplan St 2, Ramat Gan, Israel",
+      "lng": 34.8202173,
+      "lat": 32.0695525,
+      "street": "string",
+      "city": "string",
+      "country": "string"
+    },
+    "timezone": "string",
+    "defaultCheckInTime": "string",
+    "defaultCheckOutTime": "string",
+    "cleaning": {
+      "defaultCleaningTime": "string",
+      "instructions": "string"
+    },
+    "cleaningStatus": {
+      "value": "clean",
+      "updatedAt": "2019-08-24T14:15:22Z"
+    },
+    "picture": {
+      "regular": "string",
+      "thumbnail": "https://res.cloudinary.com/guesty/image/upload/c_fit,h_200/v1659982852/staging6/5213a2d206112710005d96ff/gglflnes8vodgkmtm08c.jpg",
+      "large": "string",
+      "caption": "string",
+      "height": 756,
+      "original": "https://res.cloudinary.com/guesty/image/upload/v1659982852/staging6/5213a2d206112710005d96ff/gglflnes8vodgkmtm08c.jpg",
+      "size": 39516,
+      "width": 756
+    },
+    "pictures": [
+      {
+        "regular": "string",
+        "thumbnail": "https://res.cloudinary.com/guesty/image/upload/c_fit,h_200/v1659982852/staging6/5213a2d206112710005d96ff/gglflnes8vodgkmtm08c.jpg",
+        "large": "string",
+        "caption": "string",
+        "height": 756,
+        "original": "https://res.cloudinary.com/guesty/image/upload/v1659982852/staging6/5213a2d206112710005d96ff/gglflnes8vodgkmtm08c.jpg",
+        "size": 39516,
+        "width": 756
+      }
+    ],
+    "amenities": [
+      "string"
+    ],
+    "amenitiesNotIncluded": [
+      "string"
+    ],
+    "terms": {
+      "minNights": 0,
+      "maxNights": 0,
+      "cancellation": "string"
+    },
+    "prices": {
+      "guestsIncludedInRegularFee": 0,
+      "extraPersonFee": 0,
+      "basePrice": 0,
+      "basePriceUSD": 0,
+      "monthlyPriceFactor": "0.90",
+      "weeklyPriceFactor": "0.90",
+      "weekendBasePrice": 0,
+      "securityDepositFee": 0,
+      "currency": "string",
+      "cleaningFee": 0
+    },
+    "netIncomeFormula": "string",
+    "commissionFormula": "string",
+    "commissionTaxPrecentage": "string",
+    "pms": {
+      "active": true,
+      "automation": {
+        "autoList": {
+          "active": true,
+          "config": [
+            "string"
+          ]
+        }
+      },
+      "inbox": {
+        "customSignature": "string"
+      },
+      "cleaningStatus": {
+        "value": "clean",
+        "updatedAt": "2019-08-24T14:15:22Z"
+      },
+      "paymentProcessing": {
+        "active": true,
+        "paymentProviders": {
+          "stripe": {
+            "active": true,
+            "status": "string",
+            "accountName": "string",
+            "defaultCurrency": "string",
+            "syncedAt": "2025-08-10",
+            "payload": {
+              "id": "string",
+              "livemode": true,
+              "token_type": "string",
+              "stripe_publishable_key": "string",
+              "stripe_user_id": "string",
+              "scope": "string"
+            }
+          }
+        }
+      },
+      "autoPayments": {
+        "policy": []
+      }
+    },
+    "receptionistsService": {
+      "receptionDesk": {
+        "ittt": [
+          null
+        ]
+      },
+      "screening": {
+        "checklist": [
+          null
+        ]
+      },
+      "contactPersonUserId": "string"
+    },
+    "active": true,
+    "customFields": {},
+    "calendarRules": {},
+    "publicDescription": {},
+    "privateDescription": {},
+    "markups": {}
+  }

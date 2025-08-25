@@ -1,0 +1,42 @@
+[
+    {
+      "images": [
+        {
+          "text": "string",
+          "url": "string"
+        }
+      ],
+      "amenities": {
+        "additionalProp": [
+          {
+            "name": "string",
+            "prefix": "string",
+            "bracket": "string",
+            "text": "string"
+          }
+        ]
+      },
+      "description": "string",
+      "breakfast_included": true,
+      "has_parking": true,
+      "adults_only": true,
+      "pets_allowed": true,
+      "show_additional_key_facts": true,
+      "id": 0,
+      "name": "string",
+      "image_url": "string",
+      "max_people": 0,
+      "units": 0,
+      "has_wifi": true,
+      "has_meal_plan": true,
+      "bedrooms": 0,
+      "bathrooms": 0,
+      "area_unit": "string",
+      "area": 0,
+      "min_price": 0,
+      "original_min_price": 0,
+      "max_price": 0,
+      "original_max_price": 0,
+      "price_unit_in_days": 0
+    }
+  ]

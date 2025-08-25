@@ -1,0 +1,83 @@
+{
+    "id": 0,
+    "name": "string",
+    "address": "string",
+    "zip": "string",
+    "city": "string",
+    "country": "string",
+    "image_url": "string",
+    "has_addons": true,
+    "has_agreement": true,
+    "agreement_text": "string",
+    "agreement_url": "string",
+    "owner": {
+      "spoken_languages": [
+        "string"
+      ]
+    },
+    "rating": 0,
+    "price_unit_in_days": 0,
+    "min_price": 0,
+    "original_min_price": 0,
+    "max_price": 0,
+    "original_max_price": 0,
+    "rooms": [
+      {
+        "id": 0,
+        "name": "string",
+        "image_url": "string",
+        "max_people": 0,
+        "units": 0,
+        "has_wifi": true,
+        "has_meal_plan": true,
+        "bedrooms": 0,
+        "bathrooms": 0,
+        "area_unit": "string",
+        "area": 0,
+        "min_price": 0,
+        "original_min_price": 0,
+        "max_price": 0,
+        "original_max_price": 0,
+        "price_unit_in_days": 0,
+        "currency": {
+          "id": 0,
+          "code": "string",
+          "name": "string",
+          "euro_forex": 0,
+          "symbol": "string"
+        }
+      }
+    ],
+    "in_out_max_date": "2025-08-10T20:16:11.297Z",
+    "in_out": {
+      "is_restricted": true,
+      "check_in": [
+        {
+          "date": "2025-08-10T20:16:11.297Z",
+          "for": "string"
+        }
+      ],
+      "check_out": [
+        {
+          "date": "2025-08-10T20:16:11.297Z",
+          "for": "string"
+        }
+      ],
+      "not_available": [
+        {
+          "date": "2025-08-10T20:16:11.297Z",
+          "for": "string"
+        }
+      ]
+    },
+    "currency": {
+      "id": 0,
+      "code": "string",
+      "name": "string",
+      "euro_forex": 0,
+      "symbol": "string"
+    },
+    "subscription_plans": [
+      "string"
+    ]
+  }

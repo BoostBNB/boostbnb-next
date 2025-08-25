@@ -1,0 +1,154 @@
+{
+    "count": 0,
+    "items": [
+      {
+        "id": 0,
+        "user_id": 0,
+        "arrival": "string",
+        "departure": "string",
+        "property_id": 0,
+        "rooms": [
+          {
+            "room_type_id": 0,
+            "guest_breakdown": {
+              "adults": 0,
+              "children": 0,
+              "infants": 0,
+              "pets": 0
+            },
+            "key_code": "string"
+          }
+        ],
+        "guest": {
+          "name": "string",
+          "email": "string",
+          "phone": "string",
+          "country_code": "string"
+        },
+        "language": "string",
+        "status": "Open",
+        "is_unavailable": true,
+        "is_overbooked": true,
+        "tentative_expires_at": "2025-08-10T20:16:11.297Z",
+        "source": "Manual",
+        "source_text": "string",
+        "created_from_ip": "string",
+        "created_at": "2025-08-10T20:16:11.297Z",
+        "updated_at": "2025-08-10T20:16:11.297Z",
+        "canceled_at": "2025-08-10T20:16:11.297Z",
+        "is_new": true,
+        "is_deleted": true,
+        "currency_code": "string",
+        "total_amount": {},
+        "subtotals": {
+          "stay": {},
+          "promotions": {},
+          "fees": {},
+          "taxes": {},
+          "addons": {},
+          "vat": {}
+        },
+        "amount_paid": {},
+        "amount_due": {},
+        "quote": {
+          "id": 0,
+          "policy": {
+            "name": "string",
+            "payments": "string",
+            "cancellation": "string",
+            "damage_deposit": "string"
+          },
+          "status": "Null",
+          "scheduled_transactions": [
+            {
+              "id": 0,
+              "type": "PrePayment",
+              "status": "Scheduled",
+              "amount": {},
+              "due_at": "string"
+            }
+          ],
+          "scheduled_damage_protection": [
+            {
+              "id": 0,
+              "type": "PrePayment",
+              "status": "Scheduled",
+              "amount": {},
+              "due_at": "string"
+            }
+          ],
+          "room_type_items": [
+            {
+              "room_type_id": 0,
+              "subtotal": {},
+              "prices": [
+                {
+                  "type": "string",
+                  "amount": {},
+                  "description": "string"
+                }
+              ]
+            }
+          ],
+          "addon_items": [
+            {
+              "type": "string",
+              "amount": {},
+              "description": "string"
+            }
+          ],
+          "other_items": [
+            {
+              "type": "string",
+              "amount": {},
+              "description": "string"
+            }
+          ],
+          "vat_items": [
+            {
+              "type": "string",
+              "amount": {},
+              "description": "string"
+            }
+          ],
+          "rental_contract_uid": {
+            "hash": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "uid": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+          }
+        },
+        "transactions": [
+          {
+            "id": 0,
+            "type": "Payment",
+            "status": "Requested",
+            "payment_type": "None",
+            "description": "string",
+            "amount": {},
+            "processed_at": "2025-08-10T20:16:11.297Z"
+          }
+        ],
+        "damage_protection": [
+          {
+            "id": 0,
+            "type": "Payment",
+            "status": "Requested",
+            "payment_type": "None",
+            "description": "string",
+            "amount": {},
+            "processed_at": "2025-08-10T20:16:11.297Z"
+          }
+        ],
+        "notes": "string",
+        "thread_uid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "external_booking": "string",
+        "check_in": {
+          "time": "string",
+          "initiator": "string"
+        },
+        "check_out": {
+          "time": "string",
+          "initiator": "string"
+        }
+      }
+    ]
+  }
