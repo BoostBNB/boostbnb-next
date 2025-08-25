@@ -32,7 +32,6 @@ Copying the Old Svelte Project
 
 Core Features
 ------------------------
-	- Finish Cancel Subscription Functionality
 	- Finish Upgrade/Downgrade Plan Functionality
 
 	

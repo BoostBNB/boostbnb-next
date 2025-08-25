@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { logout } from "@/actions/auth";
 
 interface HeaderProps {
@@ -27,7 +28,7 @@ const Header = ({ apbv }: HeaderProps) => {
 				</div>
 				<ul className={(dropMenuVisible ? 'block' : 'hidden') + " absolute right-8 mt-3 w-52 border-1 rounded-lg bg-gray-100 p-2 shadow-lg"}>
 					<li className="hover:bg-gray-300 p-2 rounded-md">
-						<a href="/dashboard/profile">Profile</a>
+						<Link href="/dashboard/profile" className="">Profile</Link>
 					</li>
 					<li className="hover:bg-gray-300 p-2 rounded-md">
 						<button onClick={() => logout()}>Log Out</button>

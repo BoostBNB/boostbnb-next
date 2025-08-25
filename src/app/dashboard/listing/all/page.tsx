@@ -8,7 +8,7 @@ const ListingPage = async () => {
 	const supabase = await createClient();
 	const {
 		data: { user },
-		error,
+		error
 	} = await supabase.auth.getUser();
 
 	if (error || user == null) {
@@ -38,10 +38,9 @@ const ListingPage = async () => {
 				<Link
 					key={i}
 					className="bg-gray-100 my-2 shadow-xl hover:scale-[1.01] flex"
-					href="##"
+					href={`/dashboard/listing/${listing.data.requestMetadata.id}`}
 				>
 					<Image
-						// src="/assets/pexels-nextvoyage-3051551.webp"
 						src={listing.data.property.photos[0]}
 						alt="Property IMG"
 						width={150}

@@ -1,5 +1,5 @@
 import React from "react";
-import { createListing } from "@/actions/audit";
+import { createListing } from "@/actions/listing";
 import { redirect } from "next/navigation";
 
 const NewListingPage = () => {

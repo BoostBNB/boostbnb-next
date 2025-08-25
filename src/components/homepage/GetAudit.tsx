@@ -1,5 +1,5 @@
 'use client';
-import { analyzeListing } from "@/actions/audit";
+import { analyzeListing } from "@/actions/listing";
 
 export default function GetAudit() {
   return (

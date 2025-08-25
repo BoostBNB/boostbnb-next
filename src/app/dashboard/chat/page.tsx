@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useActionState, useEffect, useRef } from "react";
-import { getCohostResponse } from "@/actions/audit";
+import { getCohostResponse } from "@/actions/chat";
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
 

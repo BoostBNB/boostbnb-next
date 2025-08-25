@@ -40,6 +40,7 @@ const DashboardLayout = async ({
 			>
 				<div className="flex flex-row min-h-screen bg-gray-200">
 					<Sidebar />
+					<div className="w-72 h-screen mx-10"></div>
 					<main className="drawer-content w-full p-5">
 						{children}
 					</main>
