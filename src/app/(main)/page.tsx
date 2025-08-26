@@ -19,30 +19,42 @@ Useful Links
 		- https://hasdata.com/apis/airbnb-api
 	- StackOverflow on Upgrading/Downgrading Subscription: https://stackoverflow.com/questions/69181605/best-way-to-handle-stripe-subscription-upgrade-and-downgrade
 
+
 Copying the Old Svelte Project
 ------------------------
 	- Styling:
 		1. Star Icon for OverviewSection.tsx
 		2. Remove All DaisyUI Classes (eventually)
-		3. Pollish looks of the app (probably with AI)
+		3. Polish looks of the app (probably with AI)
     - Ensure that every page is responsive (and navbar)
 	- Ensure User Authentication Pages is working correctly (especially signup)
-	- Ensure that Cohost Conversations are added to database
 
 
-Core Features
+Payment Processing
 ------------------------
 	- Finish Upgrade/Downgrade Plan Functionality
+	- Get the Actual Payment Plans and the features they give access to from Daniel
 
-	
+	- Prompt for feedback after subscription cancellation
+	- Send Success Email after successful Payment is made and after subscription cancellation
+
+
+Backend Integration & Functionality
+------------------------------------------------
 	- Use AirBNB Scraper API: https://hasdata.com/apis/airbnb-api
 		- Setup Database listings table with JSON column for storing scraped data
 		- Find a way to get pricing and calendar data
+	
+	- Create Optimization Tools
+		1. Listing Optimizer (pricing/calendar, min-stay/gap-rule, title, description)
+		2. Image Optimizer (image reording, Photo AI Addon)
 
-	- Upload code to GitHub and divide work with Adrian 
-		- Frontend Work: (Dashboard, Listings, Profile, Settings, Preferences, Onboarding)
-		- Backend Work: (Scraper, Listing Optimizer, Image Optimizer)
+	- Integrate with PMS Tools like Lodgify, Hostaway, Guesty, Smoobu
+	- Add Appropriate Features for PMS Tools (calendar, syncing, pricing, etc.)
 
+
+UI/UX Frontend Stuff
+-------------------------------
 	- Listings Page
 		- List all listings
 		- Show a few details (title, photo, price, rating)
@@ -59,17 +71,11 @@ Core Features
 		- Add User Profile table to database
 		- User Settings/Preferences
 
-	- Create Optimization Tools
-		1. Listing Optimizer (pricing/calendar, min-stay/gap-rule, title, description)
-		2. Image Optimizer (image reording, Photo AI Addon)
-	
-	- Integrate with PMS Tools like Lodgify, Hostaway, Guesty, Smoobu
-		- Add Appropriate Features for PMS Tools (calendar, syncing, pricing, etc.)
 
-	- Redesign Website using AI
+The Last Stretch of MVP Development
+--------------------------------------
+	- Re-style the Website using AI
 	- Add Onboarding for new users
-	- Prompt for feedback after subscription cancellation
-	- Send Success Email after successful Payment is made and after subscription cancellation
 	- Add Error Handling for the many edge cases in
 		- Log-in / Signup
 		- Stripe Payment Processing
@@ -79,15 +85,12 @@ Core Features
 	- Guardrails / Safety Check
 
 
-Additional Improvements
+Future Improvements / Features
 ------------------------
 	- Improve Cohost AI Assistant
 		- Use Langchain & Vector DB to add context and memory
 		- Add support for multiple conversations
 		- Add support for image messages and possibly other file uploads
-
-Later Features
------------------------------
 	- EventIQ: Automatic pricing adjustment based on other events in the area (Dynamic Pricing)
 	- A/B Testing: Compare different listing versions to see which performs better (automatically alternate between versions and track performance)
 	- Drift Alerts: Notifies you when Airbnb is updated outside of boostbnb account
