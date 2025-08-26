@@ -4,6 +4,7 @@ import { scrapeAirbnbListing } from "./old-scraper";
 import { getPropertyInfo } from "./scraper";
 import { askChatGPT } from "./chat";
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const urlRegex = /^https:\/\/www\.airbnb\.com\/rooms\/.+$/;
@@ -18,40 +19,30 @@ export async function createListing(formData: FormData) {
 	} = await supabase.auth.getUser();
 
 	if (userError) {
-		console.error(userError);
-		return;
+		return { error: "USER_ERROR", info: userError }
 	}
 
 	// Validate the URL
 	if (!url || typeof url !== "string") {
-		console.error({ success: false, error: "Invalid URL format" });
-		return;
+		return { error: "INVALID_URL" };
 	}
 
 	let scrapedData;
 	try {
 		scrapedData = await getPropertyInfo(url); //await scrapeAirbnbListing(url);
 	} catch (error) {
-		console.error("Scraping failed:", error);
-		return;
+		return { error: "SCRAPING_FAILED", info: error };
 	}
 
-	const { data, error } = await supabase
+	const { error } = await supabase
 		.from("listings")
 		.insert([{ user_id: user?.id, url, data: scrapedData }]) //  Save scraped JSON
-		.select();
 
 	if (error) {
-		if (error.code === "23505") {
-			// Duplicate entry (violates UNIQUE constraint)
-			console.error("Duplicate Entry");
-			return;
-		}
-		console.error(`Error ${error?.code} in adding listing`);
-		return;
+		return { error: "LISTING_INSERTION_FAILED", info: error };
 	}
 
-	return scrapedData;
+	return { error: null, scrapedData };
 }
 
 
