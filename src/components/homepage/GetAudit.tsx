@@ -3,7 +3,7 @@ import { analyzeListing } from "@/actions/listing";
 
 export default function GetAudit() {
   return (
-    <div className="my-8 w-full text-center">
+    <div className="my-8 w-full text-center" id="audit">
       <h1 className="text-2xl md:text-3xl">
         Optimize your listing <span className="font-bold text-primary">For Free</span>
       </h1>

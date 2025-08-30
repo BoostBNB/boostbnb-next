@@ -7,10 +7,12 @@ import {
 	upgradePlan,
 	downgradePlan,
 	cancelSubscription,
-	getUserSubscriptionData
+	getUserSubscription
 } from "@/actions/payments/stripe";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { getUser } from "@/actions/auth";
 
 interface SubscriptionData {
 	user_id: string;
@@ -41,20 +43,16 @@ const ManageSubscription = () => {
 	const fetchSubscriptionData = async () => {
 		try {
 			setLoading(true);
-			const userData = await getUserSubscriptionData();
-			
-			if (!userData) {
-				router.push("/log-in");
-				return;
-			}
-
-			setSubData(userData);
+			const supabase = await createClient();
+			const user = await getUser(supabase);
+			const subData = await getUserSubscription(supabase, user);
+			setSubData(subData);
 
 			// Fetch Stripe data
 			const [subscription, paymentMethods, paymentIntents] = await Promise.all([
-				getSubscriptionDetails(userData.subscription_id),
-				getCustomerPaymentMethods(userData.customer_id),
-				getCustomerPaymentIntents(userData.customer_id)
+				getSubscriptionDetails(subData.subscription_id),
+				getCustomerPaymentMethods(subData.customer_id),
+				getCustomerPaymentIntents(subData.customer_id)
 			]);
 
 			setStripeData({ subscription, paymentMethods, paymentIntents });

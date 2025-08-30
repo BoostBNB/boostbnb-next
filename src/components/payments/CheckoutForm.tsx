@@ -1,7 +1,7 @@
 "use client";
 // Lots of help from : https://docs.stripe.com/checkout/custom/quickstart?lang=node&client=react
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useCheckout, PaymentElement } from "@stripe/react-stripe-js";
 
 const CheckoutForm = ({ plan }: { plan: any }) => {

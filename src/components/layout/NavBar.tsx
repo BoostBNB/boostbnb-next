@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 
 const NavBar = async () => {
 	const supabase = await createClient();
-	const { data: { user }, error } = await supabase.auth.getUser();
+	const { data: { user } } = await supabase.auth.getUser();
     console.log("User from NavBar: ", user);
 
 	const aboutLink: string = "/#about";

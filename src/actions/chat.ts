@@ -2,6 +2,7 @@
 
 import OpenAI from 'openai';
 import { createClient } from '@/utils/supabase/server';
+import { getUser } from './auth';
 
 const openai = new OpenAI({
 	apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -24,15 +25,7 @@ export async function askChatGPT(prompt: string): Promise<string> {
 
 export async function getCohostResponse(initialState: any, formData: FormData) {
 	const supabase = await createClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-
-	// Fail if the user object dosen't exist
-	if (!user) {
-		console.log("No User Found");
-		return { success: false, error: "User is undefined" };
-	}
+	const user = await getUser(supabase);
 
 	console.log("Requesting ChatGPT");
 

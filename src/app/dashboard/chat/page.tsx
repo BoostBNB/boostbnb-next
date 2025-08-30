@@ -3,6 +3,7 @@
 import { useState, useActionState, useEffect, useRef } from "react";
 import { getCohostResponse } from "@/actions/chat";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const initialState = { success: false, error: "" };
@@ -17,7 +18,9 @@ const ChatPage = () => {
 	const [message, setMessage] = useState("");
 	const [userInitials, setUserInitials] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+
 	const chatContainer = useRef<HTMLDivElement>(null);
+	const router = useRouter();
 
 	const [form, formAction, pending] = useActionState(
 		getCohostResponse,
@@ -36,10 +39,13 @@ const ChatPage = () => {
 	useEffect(() => {
 		const getUserInitials = async () => {
 			const supabase = await createClient();
-			const {
-				data: { user },
-				error,
-			} = await supabase.auth.getUser();
+			const { data: { user }, error } = await supabase.auth.getUser();
+
+			if (error || !user) {
+				console.error("Error fetching user:", error);
+				router.push("/log-in");
+			}
+			
 			setUserInitials(user?.email?.toUpperCase()[0] ?? "U");
 		};
 

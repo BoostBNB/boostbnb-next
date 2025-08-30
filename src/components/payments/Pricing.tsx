@@ -1,15 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-function base64encode(text: string): string {
-	const encoder = new TextEncoder();
-	const encodedBytes = encoder.encode(text);
-	const binaryStringForBtoa = String.fromCharCode(...encodedBytes);
-	const base64Encoded = btoa(binaryStringForBtoa);
-	return base64Encoded;
-}
+import Link from "next/link";
+import { getPaymentPlans } from "@/actions/payments/stripe";
 
 function Feature({ content }: { content: string }) {
 	return (
@@ -20,52 +10,8 @@ function Feature({ content }: { content: string }) {
 	);
 }
 
-export default function Pricing() {
-	const router = useRouter();
-	const [plans, setPlans] = useState([
-		{
-			name: "Manual Mode",
-			price: 12,
-			priceId: "price_1Rx6ewEl7NEhfNbPpIfwigfP",
-			features: [
-				"1 AirBNB listing",
-				"Weekly audit reports",
-				"Basic optimization tools",
-				"Email Support",
-				"Analytics Dashboard",
-			]
-		},
-		{
-			name: "Scrape Mode",
-			price: 15,
-			priceId: "price_1Rx7KOEl7NEhfNbPzOu3MWsu",
-			features: [
-				"Everything in Basic",
-				"Up to 3 AirBNB listings",
-				"Unlimited audit reports",
-				"Advanced optimization tools",
-				"Priority Support",
-				"CoHost AI",
-			]
-		},
-		{
-			name: "PMS Starter",
-			price: 19,
-			priceId: "",
-			features: [
-				"Everything in Pro",
-				"24/7 VIP Support",
-				"Dedicated manager",
-				"Full competitor analysis",
-			]
-		},
-		{
-			name: "PMS Pro",
-			price: 39,
-			priceId: "",
-			features: ["Everything in Premium", "Unlimited listings"]
-		},
-	]);
+const Pricing = async () => {
+	const paymentPlans = await getPaymentPlans();
 
 	return (
 		<div
@@ -81,7 +27,7 @@ export default function Pricing() {
 			</div>
 
 			<div className="grid grid-cols-1 items-start gap-8 px-2 md:grid-cols-4">
-				{plans.map((plan, index) => (
+				{paymentPlans.map((plan: any, index: number) => (
 					<div
 						key={index}
 						className="intersect-once relative flex h-fit min-h-[28rem] flex-col gap-6 rounded-2xl bg-gray-100 p-8 pb-32 shadow-lg"
@@ -96,18 +42,20 @@ export default function Pricing() {
 							</h1>
 						</div>
 						<div className="flex flex-col">
-							{plan.features.map((feature, idx) => (
+							{plan.features.map((feature: any, idx: number) => (
 								<Feature key={idx} content={feature} />
 							))}
 						</div>
 						<div className="absolute bottom-8 left-0 z-10 flex w-full justify-center">
-							<button className="btn btn-neutral w-3/4" onClick={() => router.push(`/payments/checkout?plan=${base64encode(JSON.stringify(plan))}`)}>
+							<Link href={`${process.env.NEXT_PUBLIC_SERVER_URL}/payments/checkout?plan=${index}`}>
 								Get {plan.name}
-							</button>
+							</Link>
 						</div>
 					</div>
 				))}
 			</div>
 		</div>
-	);
+	)
 }
+
+export default Pricing;

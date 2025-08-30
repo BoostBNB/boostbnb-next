@@ -4,24 +4,34 @@ import { scrapeAirbnbListing } from "./old-scraper";
 import { getPropertyInfo } from "./scraper";
 import { askChatGPT } from "./chat";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
+import { getUser } from "./auth";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const urlRegex = /^https:\/\/www\.airbnb\.com\/rooms\/.+$/;
 
-export async function createListing(formData: FormData) {
-	const supabase = await createClient();
-	const url = formData.get("bnburl");
 
-	const {
-		data: { user },
-		error: userError,
-	} = await supabase.auth.getUser();
+export async function getUserListings(supabase: SupabaseClient, userId: string) {
+	const { data, error } = await supabase
+		.from("listings")
+		.select("url, data")
+		.eq("user_id", userId);
 
-	if (userError) {
-		return { error: "USER_ERROR", info: userError }
+	if (error) {
+		console.error("Error fetching user listings:", error.message);
+		return [];
 	}
 
+	return data || [];
+}
+
+
+export async function createListing(formData: FormData) {
+	const supabase = await createClient();
+	const user = await getUser(supabase);
+
+	const url = formData.get("bnburl");
+	
 	// Validate the URL
 	if (!url || typeof url !== "string") {
 		return { error: "INVALID_URL" };

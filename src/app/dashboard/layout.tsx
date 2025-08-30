@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import "@/app/globals.css";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
+import { getUser } from "@/actions/auth";
 
 const bricolageGrotesque = Bricolage_Grotesque({
 	subsets: ["latin"],
@@ -20,18 +20,9 @@ export const metadata: Metadata = {
 	},
 };
 
-const DashboardLayout = async ({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) => {
-
+const DashboardLayout = async ({ children }: Readonly<{ children: React.ReactNode}>) => {
 	const supabase = await createClient();
-	const { data: { user }, error } = await supabase.auth.getUser();
-
-	if (error || !user) {
-		redirect("/log-in");
-	}
+	await getUser(supabase); // Simply redirects to /log-in if user not defined
 
 	return (
 		<html lang="en">

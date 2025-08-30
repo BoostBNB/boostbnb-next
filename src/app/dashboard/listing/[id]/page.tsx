@@ -10,17 +10,15 @@ const IndividualListingPage = () => {
     const router = useRouter();
     const [listing, setListing] = useState<any>(null);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [showAmenities, setShowAmenities] = useState(false);
 
     useEffect(() => {
         const fetchListing = async () => {
-           const supabase = await createClient();
+            const supabase = await createClient();
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-            const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-            if (userError) {
-                console.error("Error fetching user:", userError);
-                router.back();
-                return;
+            if (authError || !user) {
+                router.push("/log-in");
             }
 
             console.log("Current ID: ", id);
@@ -49,13 +47,14 @@ const IndividualListingPage = () => {
         );
     }
 
+
     const property = listing.data.property;
 
     return (
         <div className="w-full max-w-[1100px] px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
             <div className="mb-8">
-                <button 
+                <button
                     onClick={() => router.back()}
                     className="mb-4 border-1 border-black p-2 hover:bg-gray-300 cursor-pointer"
                 >
@@ -86,7 +85,7 @@ const IndividualListingPage = () => {
                     </div>
                     <div className="hidden lg:grid grid-cols-2 gap-2">
                         {property.photos.slice(1, 5).map((photo: string, index: number) => (
-                            <div 
+                            <div
                                 key={index}
                                 className="relative rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => setSelectedImageIndex(index + 1)}
@@ -101,16 +100,15 @@ const IndividualListingPage = () => {
                         ))}
                     </div>
                 </div>
-                
+
                 {/* Photo thumbnails */}
                 <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
                     {property.photos.map((photo: string, index: number) => (
                         <button
                             key={index}
                             onClick={() => setSelectedImageIndex(index)}
-                            className={`flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 relative rounded-md overflow-hidden border-2 transition-all ${
-                                selectedImageIndex === index ? 'border-rose-500' : 'border-transparent'
-                            }`}
+                            className={`flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 relative rounded-md overflow-hidden border-2 transition-all ${selectedImageIndex === index ? 'border-rose-500' : 'border-transparent'
+                                }`}
                         >
                             <Image
                                 src={photo}
@@ -150,7 +148,7 @@ const IndividualListingPage = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 text-sm">
                             <span className="text-yellow-400">★</span>
                             <span className="font-medium">{property.host.rating}</span>
@@ -219,10 +217,10 @@ const IndividualListingPage = () => {
                 {/* Description */}
                 <div className="border border-gray-200 rounded-xl p-6">
                     <h3 className="text-xl font-semibold mb-4">About this place</h3>
-                    <div 
+                    <div
                         className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ 
-                            __html: property.description.replace(/<br\s*\/?>/gi, '<br>') 
+                        dangerouslySetInnerHTML={{
+                            __html: property.description.replace(/<br\s*\/?>/gi, '<br>')
                         }}
                     />
                 </div>
@@ -237,16 +235,16 @@ const IndividualListingPage = () => {
                                 .filter((amenity: any) => amenity.available)
                                 .slice(0, 8)
                                 .map((amenity: any, index: number) => (
-                                <div key={index} className="flex items-center gap-3">
-                                    <div className="w-6 h-6 text-gray-600 flex-shrink-0">
-                                        {getAmenityIcon(amenity.type)}
+                                    <div key={index} className="flex items-center gap-3">
+                                        <div className="w-6 h-6 text-gray-600 flex-shrink-0">
+                                            {getAmenityIcon(amenity.type)}
+                                        </div>
+                                        <span className="text-gray-900 text-sm">{amenity.title}</span>
                                     </div>
-                                    <span className="text-gray-900 text-sm">{amenity.title}</span>
-                                </div>
-                            ))}
+                                ))}
                         </div>
                         {property.amenities.filter((amenity: any) => amenity.available).length > 8 && (
-                            <button className="mt-4 p-2 border-1 border-black hover:bg-gray-300 cursor-pointer">
+                            <button className="mt-4 p-2 border-1 border-black hover:bg-gray-300 cursor-pointer" onClick={() => setShowAmenities(true)}>
                                 Show all {property.amenities.filter((amenity: any) => amenity.available).length} amenities
                             </button>
                         )}
@@ -269,6 +267,22 @@ const IndividualListingPage = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Full Amenities Pop-up */}
+                <div className={!showAmenities ? `hidden` : "rounded-lg fixed top-10 right-10 w-100 h-150 bg-gray-300 border-1 shadow-lg flex flex-col p-5 items-start overflow-y-scroll"}>
+                    <button className="mb-4 border-2 border-red-400 text-red-400 p-2 hover:bg-gray-400 hover:text-white cursor-pointer self-end" onClick={() => setShowAmenities(false)}>
+                        Close
+                    </button>
+                    <h1 className="text-lg font-bold">All Available Amenities</h1>
+                    {property.amenities.filter((amenity: any) => amenity.available).map((amenity: any, index: number) => (
+                        <div key={index} className="flex items-center gap-3">
+                            <div className="w-6 h-6 text-gray-600 flex-shrink-0">
+                                {getAmenityIcon(amenity.type)}
+                            </div>
+                            <span className="text-gray-900 text-sm">{amenity.title}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
@@ -290,7 +304,7 @@ const getAmenityIcon = (type: string) => {
         'SYSTEM_FIRE_EXTINGUISHER': '🧯',
         'SYSTEM_FIRST_AID_KIT': '🏥',
     };
-    
+
     return iconMap[type] || '✓';
 };
 

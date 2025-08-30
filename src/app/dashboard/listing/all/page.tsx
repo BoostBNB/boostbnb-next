@@ -2,27 +2,16 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
+import { getUser } from "@/actions/auth";
 
 const ListingPage = async () => {
 	const supabase = await createClient();
-	const {
-		data: { user },
-		error
-	} = await supabase.auth.getUser();
-
-	if (error || user == null) {
-		console.error("Error getting user:", error?.message);
-	}
+	const user = await getUser(supabase);
 
 	const { data: listingData, error: selectError } = await supabase
 		.from("listings")
 		.select("url, data")
 		.eq("user_id", user?.id);
-
-	if (!user) {
-		redirect("/log-in");
-	}
 
 	if (selectError) {
 		console.error("Error fetching listings:", selectError.message);

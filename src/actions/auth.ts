@@ -1,28 +1,43 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
 const emailRegex = /^[\w-\.+]+@([\w-]+\.)+[\w-]{2,8}$/;
 
+// Returns the current user or redirects to the login page
+export async function getUser(supabaseClient: any): Promise<User> {
+	const { data: { user }, error } = await supabaseClient.auth.getUser();
+
+	if (error || !user) {
+		console.error("Error fetching user:", error);
+		redirect("/log-in");
+	}
+
+	return user;
+}
+
 
 export const logout = async () => {
-    const supabase = await createClient();
-	
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      window.location.href = '/log-in';
-    } else {
-      console.error(error);
-    }
-  };
+	const supabase = await createClient();
+
+	const { error } = await supabase.auth.signOut();
+
+	if (!error) {
+		window.location.href = '/log-in';
+	} else {
+		console.error(error);
+		return { error: "LOGOUT_ERROR", info: error };
+	}
+};
+
 
 export async function signup(initialState: any, formData: FormData) {
 	const supabase = await createClient();
 	const email = formData.get("email") as string;
 	const password = formData.get("password") as string;
 
-	// eslint-disable-next-line no-useless-escape
 	const validEmail = emailRegex.test(email);
 	if (!validEmail) {
 		return {
@@ -64,6 +79,7 @@ export async function signup(initialState: any, formData: FormData) {
 		message: "Please check your email to finish setting up your account.",
 	};
 }
+
 
 export async function login(initialState: any, formData: FormData) {
 	const email = formData.get("email") as string;

@@ -15,67 +15,47 @@ Useful Links
 		- Guesty: 	https://open-api-docs.guesty.com/docs/getting-started 	(Uses Oauth 2.0; Requires Guesty Account)
 		- Lodgify: 	https://docs.lodgify.com/reference/listproperties 		(No OAuth; Requires the user's Public API Key)
 		- Smoobu: 	https://docs.smoobu.com/?shell#third-party-providers 	(Uses Oauth 2.0; Requires Calling Smoobu to get approval)
-	- Possibly Look into a better AirBNB API (web scraper)
-		- https://hasdata.com/apis/airbnb-api
+	- Prebuilt AirBNB Web-Scraping API: https://hasdata.com/apis/airbnb-api
 	- StackOverflow on Upgrading/Downgrading Subscription: https://stackoverflow.com/questions/69181605/best-way-to-handle-stripe-subscription-upgrade-and-downgrade
-
-
-Copying the Old Svelte Project
-------------------------
-	- Styling:
-		1. Star Icon for OverviewSection.tsx
-		2. Remove All DaisyUI Classes (eventually)
-		3. Polish looks of the app (probably with AI)
-    - Ensure that every page is responsive (and navbar)
-	- Ensure User Authentication Pages is working correctly (especially signup)
 
 
 Payment Processing
 ------------------------
 	- Finish Upgrade/Downgrade Plan Functionality
-	- Get the Actual Payment Plans and the features they give access to from Daniel
-
+	- Get the Actual Payment Plans and the features they include from Daniel
 	- Prompt for feedback after subscription cancellation
 	- Send Success Email after successful Payment is made and after subscription cancellation
+	- Make a paywall page/component to redirect to whenever a user tries to access a premium feature without a valid subscription.
 
 
 Backend Integration & Functionality
 ------------------------------------------------
-	- Use AirBNB Scraper API: https://hasdata.com/apis/airbnb-api
-		- Setup Database listings table with JSON column for storing scraped data
-		- Find a way to get pricing and calendar data
-	
 	- Create Optimization Tools
 		1. Listing Optimizer (pricing/calendar, min-stay/gap-rule, title, description) (have copy-paste helpers)
+			- Add a preview of this feature to the homepage (GetAudit.tsx) that uses the example-airbnb-response.json
 		2. Image Optimizer (image re-ordering) + Photo AI Addon (image scoring)
 
 	- Integrate with PMS Tools like Lodgify, Hostaway, Guesty, Smoobu
-	- Add Appropriate Features for PMS Tools (calendar, syncing, pricing, etc.)
+	- Add Appropriate Features for PMS Tools
+		- Show Pricing/Calendar in Individual Listing Page
+		- Calendar/Pricing Optimization
+		- Syncing listings from provider
+		- Edit listings
+		- Add Listing Statistics in the Dashboard Page
 
 
 UI/UX Frontend Stuff
 -------------------------------
-	- Individual Listing Page
-		- Add functionality to the "Show All Amenities" Button
-		- Get and use pricing and calendar information (Wait for PMS Tool Accounts)
-
 	- Dashboard Page
-		- Overview of all listings and some statistics (Wait for PMS Tool Accounts)
 		- Add Onboarding for new users
-
 	- Profile Page
-		- Add User Profile table to database
 		- User Settings/Preferences
 
 
 The Last Stretch of MVP Development
 --------------------------------------
-	- Re-style the Website using AI
-	- Add Error Handling for the many edge cases in
-		- Log-in / Signup
-		- Stripe Payment Processing
-		- AirBNB Scraper API
-		- All Other Pages
+	- Ensure User Authentication Pages is working correctly (especially signup)
+	- Re-style the Website using AI (from Daniel's pictures) (make sure everything is responsive)
 	- Add RLS Policies to database tables
 	- Weekly Insights Newsletter
 	- Guardrails / Safety Check

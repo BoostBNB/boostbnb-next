@@ -26,7 +26,7 @@ function Box(input: BoxProps) {
 
 export default function FeaturesSection() {
   return (  
-  <section className="bg-gray-100 px-6 py-12 md:px-16">
+  <section className="bg-gray-100 px-6 py-12 md:px-16" id="about">
     <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Box

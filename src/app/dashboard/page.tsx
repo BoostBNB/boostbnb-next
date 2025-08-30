@@ -1,36 +1,17 @@
 import Header from "@/components/dashboard/Header";
 import Stats from "@/components/dashboard/Stats";
 import React from "react";
-import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import { getUser } from "@/actions/auth";
+import { getUserSubscription } from "@/actions/payments/stripe";
 
 const DashboardPage = async () => {
 	const supabase = await createClient();
-	const {
-		data: { user },
-		error,
-	} = await supabase.auth.getUser();
+	const user = await getUser(supabase);
+	const subData = await getUserSubscription(supabase, user);
 
-	if (error || !user) {
-		console.error("Error authenticating user: ", error);
-	}
-
-	const { data: subData, error: subError } = await supabase
-		.from("subscriptions")
-		.select("*")
-		.eq("user_id", user?.id)
-		.single();
-
-	let isActive: boolean;
-
-	if (subError || !subData) {	
-		console.error("Error fetching subscription data: ", subError);
-		isActive = false
-	}
-	else {
-		isActive = subData.is_active;
-	}
-
+	const isActive: boolean = subData.is_active || false;
 	const apbv = user && user.email ? user.email.charAt(0).toUpperCase() : "U";
 
 	return (

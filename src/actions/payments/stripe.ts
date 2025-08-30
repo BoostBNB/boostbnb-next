@@ -3,10 +3,31 @@
 import Stripe from "stripe";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getUser } from "../auth";
+import { SupabaseClient, User } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-function getPlanFromPriceId(priceId: string) {
+
+export async function getUserSubscription(supabase: SupabaseClient, user: User) {
+	const { data: subData, error: subError } = await supabase
+		.from("subscriptions")
+		.select("*")
+		.eq("user_id", user.id)
+		.single();
+
+	if (subError || !subData) {
+		console.error("Error fetching subscription data:", subError);
+		throw new Error(
+			"Failed to fetch subscription data: " + subError?.message
+		);
+	}
+
+	return subData;
+}
+
+
+export async function getPlanFromPriceId(priceId: string){
 	const plans: { [key: string]: string } = {
 		price_1Rx6ewEl7NEhfNbPpIfwigfP: "Manual Mode",
 		price_1Rx7KOEl7NEhfNbPzOu3MWsu: "Scrape Mode",
@@ -16,17 +37,10 @@ function getPlanFromPriceId(priceId: string) {
 	return plans[priceId] || "none";
 }
 
+
 export async function createCheckoutSession(priceId: string): Promise<string> {
 	const supabase = await createClient();
-	const {
-		data: { user },
-		error,
-	} = await supabase.auth.getUser();
-
-	if (error || !user) {
-		console.error("User not authenticated or error fetching user:", error);
-		redirect("/log-in");
-	}
+	const user = await getUser(supabase);
 
 	const session = await stripe.checkout.sessions.create({
 		ui_mode: "custom",
@@ -70,7 +84,7 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
 	} else {
 		// If a subscription already exists, update it
 		if (subData.is_active) {
-			// If user has already verified their subscription, redirect them to the dashboard
+			// If user already has active subscription, redirect them to the dashboard
 			console.error("Subscription already exists and is active.");
 			redirect(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard`);
 		}
@@ -95,32 +109,11 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
 	return session.client_secret as string;
 }
 
+
 export async function confirmPaymentSuccess() {
 	const supabase = await createClient();
-	const {
-		data: { user },
-		error,
-	} = await supabase.auth.getUser();
-
-	if (error || !user) {
-		console.error("User not authenticated or error fetching user:", error);
-		redirect("/log-in");
-	}
-
-	console.log("Current User ID: ", user.id);
-
-	const { data: subData, error: subError } = await supabase
-		.from("subscriptions")
-		.select("*")
-		.eq("user_id", user.id)
-		.single();
-
-	if (subError || !subData) {
-		console.error("Error fetching subscription data:", subError);
-		throw new Error(
-			"Failed to fetch subscription data: " + subError?.message
-		);
-	}
+	const user = await getUser(supabase);
+	const subData = await getUserSubscription(supabase, user);
 
 	if (!subData.session_id || subData.is_active == true) {
 		console.error("No session ID found or plan is already set");
@@ -153,6 +146,7 @@ export async function confirmPaymentSuccess() {
 		subscription: session.subscription,
 	};
 }
+
 
 export async function getSubscriptionDetails(subscriptionId: string) {
 	const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -194,15 +188,11 @@ export async function getSubscriptionDetails(subscriptionId: string) {
 	};
 }
 
+
 export async function cancelSubscription(subscriptionId: string) {
 	try {
 		const supabase = await createClient();
-		const { data: { user }, error } = await supabase.auth.getUser();
-
-		if (error || !user) {
-			console.error("User not authenticated or error fetching user:", error);
-			throw new Error("User not authenticated or error fetching user:" + error?.message);
-		}
+		const user = await getUser(supabase);
 
 		const { error: updateError } = await supabase
 			.from("subscriptions")
@@ -210,7 +200,7 @@ export async function cancelSubscription(subscriptionId: string) {
 				is_active: false,
 			})
 			.eq("user_id", user?.id);
-		
+
 		if (updateError) {
 			console.error("Error updating subscription record:", updateError);
 			throw new Error(
@@ -227,6 +217,7 @@ export async function cancelSubscription(subscriptionId: string) {
 	}
 }
 
+
 // export async function stopCancellation(subscriptionId: string) {
 // 	try {
 // 		const subscription = await stripe.subscriptions.update(subscriptionId, {
@@ -240,6 +231,7 @@ export async function cancelSubscription(subscriptionId: string) {
 // 		throw new Error("Failed to stop cancellation: " + error?.message);
 // 	}
 // }
+
 
 // Simply updates the subscription to immediately replace the old plan with the new one
 export async function upgradePlan(subscriptionId: string, newPriceId: string) {
@@ -271,6 +263,7 @@ export async function upgradePlan(subscriptionId: string, newPriceId: string) {
 	}
 }
 
+
 // Creates a subscription schedule that begins the new plan at the end of the current subscription period
 export async function downgradePlan(
 	subscriptionId: string,
@@ -288,25 +281,25 @@ export async function downgradePlan(
 		const newSubscriptionSchedule = await stripe.subscriptionSchedules.update(
 			subscriptionSchedule.id,
 			{
-			  phases: [
-				{
-				  items: [
+				phases: [
 					{
-					  price: subscription.items.data[0].price.id,
-					  quantity: 1,
+						items: [
+							{
+								price: subscription.items.data[0].price.id,
+								quantity: 1,
+							},
+						],
+						iterations: 1
 					},
-				  ],
-				  iterations: 1
-				},
-				{
-				  items: [
 					{
-					  price: newPriceId,
-					  quantity: 1,
+						items: [
+							{
+								price: newPriceId,
+								quantity: 1,
+							},
+						],
 					},
-				  ],
-				},
-			  ],
+				],
 			}
 		)
 
@@ -316,6 +309,7 @@ export async function downgradePlan(
 		throw new Error("Failed to downgrade plan: " + error);
 	}
 }
+
 
 export async function getCustomerPaymentMethods(customerId: string) {
 	const paymentMethods = await stripe.paymentMethods.list({
@@ -339,6 +333,7 @@ export async function getCustomerPaymentMethods(customerId: string) {
 		metadata: method.metadata,
 	}));
 }
+
 
 export async function getCustomerPaymentIntents(customerId: string) {
 	const paymentIntents = await stripe.paymentIntents.list({
@@ -364,28 +359,51 @@ export async function getCustomerPaymentIntents(customerId: string) {
 	}));
 }
 
-export async function getUserSubscriptionData() {
-	const supabase = await createClient();
-	const {
-		data: { user },
-		error: userError,
-	} = await supabase.auth.getUser();
 
-	if (userError || !user) {
-		console.error("User not authenticated or error fetching user:", userError);
-		return null;
-	}
-
-	const { data: subData, error: subError } = await supabase
-		.from("subscriptions")
-		.select("*")
-		.eq("user_id", user.id)
-		.single();
-
-	if (subError || !subData) {
-		console.error("Error fetching subscription:", subError);
-		throw new Error("Failed to fetch subscription data: " + subError?.message);
-	}
-
-	return subData;
+export async function getPaymentPlans() {
+	return [
+		{
+			name: "Manual Mode",
+			price: 12,
+			priceId: "price_1Rx6ewEl7NEhfNbPpIfwigfP",
+			features: [
+				"1 AirBNB listing",
+				"Weekly audit reports",
+				"Basic optimization tools",
+				"Email Support",
+				"Analytics Dashboard",
+			]
+		},
+		{
+			name: "Scrape Mode",
+			price: 15,
+			priceId: "price_1Rx7KOEl7NEhfNbPzOu3MWsu",
+			features: [
+				"Everything in Basic",
+				"Up to 3 AirBNB listings",
+				"Unlimited audit reports",
+				"Advanced optimization tools",
+				"Priority Support",
+				"CoHost AI",
+			]
+		},
+		{
+			name: "PMS Starter",
+			price: 19,
+			priceId: "",
+			features: [
+				"Everything in Pro",
+				"24/7 VIP Support",
+				"Dedicated manager",
+				"Full competitor analysis",
+			]
+		},
+		{
+			name: "PMS Pro",
+			price: 39,
+			priceId: "",
+			features: ["Everything in Premium", "Unlimited listings"]
+		},
+	]
 }
+

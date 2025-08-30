@@ -1,21 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { CheckoutProvider } from "@stripe/react-stripe-js";
-import { createCheckoutSession } from "@/actions/payments/stripe";
+import { createCheckoutSession, getPaymentPlans } from "@/actions/payments/stripe";
 import CheckoutForm from "@/components/payments/CheckoutForm";
-
-function base64decode(base64Encoded: string): string {
-	const decodedBinaryString = atob(base64Encoded);
-	const decodedBytes = new Uint8Array(decodedBinaryString.length);
-	for (let i = 0; i < decodedBinaryString.length; i++) {
-		decodedBytes[i] = decodedBinaryString.charCodeAt(i);
-	}
-	const decodedUTF8 = new TextDecoder("utf-8").decode(decodedBytes);
-	return decodedUTF8;
-}
 
 const stripePromise = loadStripe(
 	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -24,11 +14,19 @@ const stripePromise = loadStripe(
 const CheckoutPage = () => {
 	const searchParams = useSearchParams();
 	const [isLoading, setIsLoading] = useState(true);
-
-	const plan = JSON.parse(base64decode(searchParams.get("plan") as string));
+	const [plan, setPlan] = useState<any>(null);
 
 	// This is a simplified example; in a real app, you might listen to element ready events
 	useEffect(() => {
+		const fetchPlan = async () => {
+				const planIndex = searchParams.get("plan") as string;
+				const paymentPlans = await getPaymentPlans();
+				const selectedPlan = paymentPlans[parseInt(planIndex) || 0];
+				setPlan(selectedPlan);
+		}
+
+		fetchPlan();
+
 		stripePromise.then(() => {
 			setIsLoading(false); // Set loading to false once Stripe is loaded and ready
 		});

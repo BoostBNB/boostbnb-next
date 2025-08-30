@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { confirmPaymentSuccess } from "@/actions/payments/stripe";
 import { useRouter } from "next/navigation";
-import Stripe from "stripe";
 
 const PaymentCompletionPage = () => {
 	const [stripeSession, setStripeSession] = useState<any>(null);
