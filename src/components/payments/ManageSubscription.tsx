@@ -4,33 +4,37 @@ import {
 	getSubscriptionDetails,
 	getCustomerPaymentMethods,
 	getCustomerPaymentIntents,
+	getPriceDetails,
 	upgradePlan,
 	downgradePlan,
 	cancelSubscription,
-	getUserSubscription
+	stopCancellation,
+	PaymentPlan,
+	getPaymentPlans
 } from "@/actions/payments/stripe";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { getUser } from "@/actions/auth";
 
 interface SubscriptionData {
 	user_id: string;
 	customer_id: string;
 	subscription_id: string;
-	plan: string;
-	is_active: boolean;
+	is_complete: boolean;
 }
 
 interface StripeData {
 	subscription: any;
 	paymentMethods: any[];
 	paymentIntents: any[];
+	priceDetails: any;
 }
 
 const ManageSubscription = () => {
 	const [subData, setSubData] = useState<SubscriptionData | null>(null);
 	const [stripeData, setStripeData] = useState<StripeData | null>(null);
+	const [switchPlanMenuOpen, setSwitchPlanMenuOpen] = useState(false);
+	const [paymentPlans, setPaymentPlans] = useState<PaymentPlan[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [actionLoading, setActionLoading] = useState(false);
@@ -43,19 +47,43 @@ const ManageSubscription = () => {
 	const fetchSubscriptionData = async () => {
 		try {
 			setLoading(true);
+			const plans = await getPaymentPlans();
+			setPaymentPlans(plans);
+
 			const supabase = await createClient();
-			const user = await getUser(supabase);
-			const subData = await getUserSubscription(supabase, user);
+			const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+			if (!user || userError) {
+				console.error(userError);
+				router.push("/log-in");
+				return;
+			}
+
+			const { data: subData, error: subError } = await supabase
+				.from("subscriptions")
+				.select("*")
+				.eq("user_id", user.id)
+				.single();
+
+			if (subError || !subData) {
+				console.error("Error fetching subscription data:", subError);
+				throw new Error(
+					"Failed to fetch subscription data: " + subError?.message
+				);
+			}
+
 			setSubData(subData);
 
 			// Fetch Stripe data
-			const [subscription, paymentMethods, paymentIntents] = await Promise.all([
-				getSubscriptionDetails(subData.subscription_id),
+			const subscription = await getSubscriptionDetails(subData.subscription_id);
+			const priceDetails = await getPriceDetails(subscription.items[0].price.id);
+
+			const [paymentMethods, paymentIntents] = await Promise.all([
 				getCustomerPaymentMethods(subData.customer_id),
 				getCustomerPaymentIntents(subData.customer_id)
 			]);
 
-			setStripeData({ subscription, paymentMethods, paymentIntents });
+			setStripeData({ subscription, paymentMethods, paymentIntents, priceDetails });
 		} catch (err: any) {
 			console.error("Error fetching data:", err);
 			setError(err.message || "Failed to fetch subscription data");
@@ -81,6 +109,21 @@ const ManageSubscription = () => {
 		try {
 			setActionLoading(true);
 			await cancelSubscription(subData.subscription_id);
+			await fetchSubscriptionData(); // Refresh data
+		} catch (err: any) {
+			console.error("Error canceling subscription:", err);
+			alert("Failed to cancel subscription. Please try again.");
+		} finally {
+			setActionLoading(false);
+		}
+	};
+
+	const handleStopCancellation = async () => {
+		if (!subData || actionLoading) return;
+		
+		try {
+			setActionLoading(true);
+			await stopCancellation(subData.subscription_id);
 			await fetchSubscriptionData(); // Refresh data
 		} catch (err: any) {
 			console.error("Error canceling subscription:", err);
@@ -167,7 +210,7 @@ const ManageSubscription = () => {
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
 						<p><strong>Status:</strong> <span className={`px-2 py-1 rounded text-sm ${subscription?.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{subscription?.status}</span></p>
-						<p><strong>Plan:</strong> {subData.plan}</p>
+						<p><strong>Plan:</strong> {paymentPlans.find(p => p.priceId === stripeData.priceDetails.id)?.name}</p>
 						<p><strong>Customer ID:</strong> {subscription?.customer}</p>
 					</div>
 					<div>
@@ -208,18 +251,11 @@ const ManageSubscription = () => {
 				<div className="space-y-4">
 					<div className="flex flex-wrap gap-3">
 						<button
-							onClick={() => handleUpgradePlan('price_1Rx7KOEl7NEhfNbPzOu3MWsu')}
+							onClick={() => setSwitchPlanMenuOpen(true)}
 							className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-							disabled={subData.plan === 'Scrape Mode' || actionLoading}
+							disabled={actionLoading}
 						>
-							{actionLoading ? 'Processing...' : subData.plan === 'Scrape Mode' ? 'Current Plan: Scrape Mode' : 'Upgrade to Scrape Mode'}
-						</button>
-						<button
-							onClick={() => handleDowngradePlan('price_1Rx6ewEl7NEhfNbPpIfwigfP')}
-							className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-							disabled={subData.plan === 'Manual Mode' || actionLoading}
-						>
-							{actionLoading ? 'Processing...' : subData.plan === 'Manual Mode' ? 'Current Plan: Manual Mode' : 'Downgrade to Manual Mode'}
+							Switch Subscription
 						</button>
 					</div>
 					<button
@@ -229,7 +265,51 @@ const ManageSubscription = () => {
 					>
 						{actionLoading ? 'Processing...' : subscription?.cancel_at_period_end ? 'Cancellation Scheduled' : 'Cancel Subscription'}
 					</button>
+					<button
+						onClick={handleStopCancellation}
+						className="ml-5 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+						disabled={!subscription?.cancel_at_period_end || actionLoading}
+					>
+						{actionLoading ? 'Processing...' : 'Stop Cancellation'}
+					</button>
 				</div>
+			</div>
+
+			<div id="switch-plan-menu" className={switchPlanMenuOpen ? "shadow-lg overflow-y-scroll fixed top-[25%] right-10 w-200 h-[50%] bg-gray-300 border-1 rounded-lg" : "hidden"}>
+					<div className="flex justify-around items-center p-3 border-b-1">
+						<h1 className="text-2xl font-bold">Switch Subscription Plan</h1>
+						<button className="p-3 border-1 rounded-md border-red-400 text-red-400 hover:bg-red-100" onClick={() => setSwitchPlanMenuOpen(false)}>Close</button>
+					</div>
+					<div>
+						{paymentPlans.map((plan: PaymentPlan, index: number) => (
+							<div key={index} className="m-4 p-4 border rounded-lg bg-white">
+								<h2 className="text-xl font-semibold mb-2">{plan.name}</h2>
+								<p className="mb-2">${plan.price} / month</p>
+								<ul className="list-disc list-inside mb-4">
+									{plan.features.map((feature, idx) => (
+										<li key={idx}>{feature}</li>
+									))}
+								</ul>
+								{plan.priceId === stripeData.priceDetails.id ? (
+									<button className="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed" disabled>Current Plan</button>
+								) : (
+									<button
+										className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+										onClick={() => {
+											if (plan.price! > stripeData.priceDetails.unit_amount / 100) {
+												handleUpgradePlan(plan.priceId);
+											} else {
+												handleDowngradePlan(plan.priceId);
+											}
+										}}
+										disabled={actionLoading}
+									>
+										{actionLoading ? 'Processing...' : plan.price! > stripeData.priceDetails.unit_amount / 100 ? 'Upgrade to this Plan' : 'Downgrade to this Plan'}
+									</button>
+								)}
+							</div>
+						))}
+					</div>
 			</div>
 
 			{/* Payment Methods */}

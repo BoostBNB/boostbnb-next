@@ -4,43 +4,23 @@ import Stripe from "stripe";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { getUser } from "../auth";
-import { SupabaseClient, User } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-
-export async function getUserSubscription(supabase: SupabaseClient, user: User) {
-	const { data: subData, error: subError } = await supabase
-		.from("subscriptions")
-		.select("*")
-		.eq("user_id", user.id)
-		.single();
-
-	if (subError || !subData) {
-		console.error("Error fetching subscription data:", subError);
-		throw new Error(
-			"Failed to fetch subscription data: " + subError?.message
-		);
-	}
-
-	return subData;
-}
-
-
-export async function getPlanFromPriceId(priceId: string){
-	const plans: { [key: string]: string } = {
-		price_1Rx6ewEl7NEhfNbPpIfwigfP: "Manual Mode",
-		price_1Rx7KOEl7NEhfNbPzOu3MWsu: "Scrape Mode",
-		// Add other priceId to plan name mappings here
-	};
-
-	return plans[priceId] || "none";
+export interface PaymentPlan {
+	name: string;
+	price: number | null;
+	priceId: string;
+	features: string[];
 }
 
 
 export async function createCheckoutSession(priceId: string): Promise<string> {
 	const supabase = await createClient();
 	const user = await getUser(supabase);
+
+	const plans = await getPaymentPlans();
+	const planName = plans.find((plan: any) => plan.priceId === priceId)?.name;
 
 	const session = await stripe.checkout.sessions.create({
 		ui_mode: "custom",
@@ -71,8 +51,7 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
 			.from("subscriptions")
 			.insert({
 				user_id: user.id,
-				session_id: session.id,
-				plan: getPlanFromPriceId(priceId),
+				session_id: session.id
 			});
 
 		if (insertError) {
@@ -83,18 +62,17 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
 		}
 	} else {
 		// If a subscription already exists, update it
-		if (subData.is_active) {
-			// If user already has active subscription, redirect them to the dashboard
-			console.error("Subscription already exists and is active.");
-			redirect(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard`);
-		}
+		// if (subData.is_complete) {
+		// 	// If user is already subscribed and wants to update subscription, redirect to "Manage Subscription" page
+		// 	console.error("Subscription already exists and is complete.");
+		// 	redirect(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/profile`);
+		// }
 
 		const { error: insertError } = await supabase
 			.from("subscriptions")
 			.update({
 				user_id: user.id,
-				session_id: session.id,
-				plan: getPlanFromPriceId(priceId),
+				session_id: session.id
 			})
 			.eq("user_id", user.id);
 
@@ -113,11 +91,21 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
 export async function confirmPaymentSuccess() {
 	const supabase = await createClient();
 	const user = await getUser(supabase);
-	const subData = await getUserSubscription(supabase, user);
 
-	if (!subData.session_id || subData.is_active == true) {
+	const { data: subData, error: subError } = await supabase
+		.from("subscriptions")
+		.select("*")
+		.eq("user_id", user.id)
+		.single();
+
+	if (subError || !subData) {
+		console.error("Error fetching subscription data:", subError);
+	}
+
+	if (!subData.session_id || subData.is_complete == true) {
 		console.error("No session ID found or plan is already set");
-		throw new Error("No session ID found or plan is already set");
+		// throw new Error("No session ID found or plan is already set");
+		redirect(`${process.env.NEXT_PUBLIC_SERVER_URL}/dashboard/profile`);
 	}
 
 	const session = await stripe.checkout.sessions.retrieve(subData.session_id);
@@ -128,7 +116,7 @@ export async function confirmPaymentSuccess() {
 		.update({
 			customer_id: session.customer,
 			subscription_id: session.subscription,
-			is_active: session.status === "complete",
+			is_complete: session.status === "complete",
 		})
 		.eq("user_id", user.id);
 
@@ -148,18 +136,7 @@ export async function confirmPaymentSuccess() {
 }
 
 
-export async function getSubscriptionDetails(subscriptionId: string) {
-	const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
-	if (!subscription) {
-		console.error(
-			"No subscription found for the given ID: " + subscriptionId
-		);
-		throw new Error(
-			"No subscription found for the given ID: " + subscriptionId
-		);
-	}
-
+export async function getRelevantSubscriptionData(subscription: Stripe.Subscription) {
 	return {
 		id: subscription.id,
 		status: subscription.status,
@@ -189,28 +166,32 @@ export async function getSubscriptionDetails(subscriptionId: string) {
 }
 
 
+export async function getSubscriptionDetails(subscriptionId: string) {
+	const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+
+	if (!subscription) {
+		console.error(
+			"No subscription found for the given ID: " + subscriptionId
+		);
+		throw new Error(
+			"No subscription found for the given ID: " + subscriptionId
+		);
+	}
+
+	const relevantData = await getRelevantSubscriptionData(subscription);
+	return relevantData;
+}
+
+
+// Cancels the subscription so that it becomes inactive at the end of the period
 export async function cancelSubscription(subscriptionId: string) {
 	try {
-		const supabase = await createClient();
-		const user = await getUser(supabase);
+		const subscription = await stripe.subscriptions.update(subscriptionId, {
+			cancel_at_period_end: true,
+		});
 
-		const { error: updateError } = await supabase
-			.from("subscriptions")
-			.update({
-				is_active: false,
-			})
-			.eq("user_id", user?.id);
-
-		if (updateError) {
-			console.error("Error updating subscription record:", updateError);
-			throw new Error(
-				"Failed to update subscription record: " + updateError?.message
-			);
-		}
-
-		const subscription = await stripe.subscriptions.cancel(subscriptionId);
-		return subscription;
-
+		const relevantData = await getRelevantSubscriptionData(subscription);
+		return relevantData;
 	} catch (error: any) {
 		console.error("Error canceling subscription:", error);
 		throw new Error("Failed to cancel subscription: " + error?.message);
@@ -218,17 +199,31 @@ export async function cancelSubscription(subscriptionId: string) {
 }
 
 
-// export async function stopCancellation(subscriptionId: string) {
-// 	try {
-// 		const subscription = await stripe.subscriptions.update(subscriptionId, {
-// 			cancel_at_period_end: false,
-// 		});
+export async function stopCancellation(subscriptionId: string) {
+	try {
+		const subscription = await stripe.subscriptions.update(subscriptionId, {
+			cancel_at_period_end: false,
+		});
 
-// 		return subscription;
-// 	}
-// 	catch (error: any) {
-// 		console.error("Error stopping cancellation:", error);
-// 		throw new Error("Failed to stop cancellation: " + error?.message);
+		const relevantData = await getRelevantSubscriptionData(subscription);
+		return relevantData;
+	} catch (error: any) {
+		console.error("Error stopping cancellation:", error);
+		throw new Error("Failed to stop cancellation: " + error?.message);
+	}
+}
+
+
+// // Immediatly cancels a subscription 
+// export async function cancelImmediately(subscriptionId: string) {
+// 	try {
+// 		const subscription = await stripe.subscriptions.cancel(subscriptionId);
+// 		const relevantData = await getRelevantSubscriptionData(subscription);
+// 		return relevantData;
+
+// 	} catch (error: any) {
+// 		console.error("Error canceling subscription:", error);
+// 		throw new Error("Failed to cancel subscription: " + error?.message);
 // 	}
 // }
 
@@ -243,20 +238,36 @@ export async function upgradePlan(subscriptionId: string, newPriceId: string) {
 		const currentItemId = subscription.items.data[0].id;
 
 		// Update the subscription with the new price
+		// const updatedSubscription = await stripe.subscriptions.update(
+		// 	subscriptionId,
+		// 	{
+		// 		items: [
+		// 			{
+		// 				id: currentItemId,
+		// 				price: newPriceId,
+		// 			},
+		// 		],
+		// 		// proration_behavior: "create_prorations", // Adjust proration behavior as needed
+		// 	}
+		// );
 		const updatedSubscription = await stripe.subscriptions.update(
 			subscriptionId,
 			{
 				items: [
 					{
 						id: currentItemId,
-						price: newPriceId,
+						deleted: true
 					},
+					{
+						price: newPriceId
+					}
 				],
 				// proration_behavior: "create_prorations", // Adjust proration behavior as needed
 			}
 		);
 
-		return updatedSubscription;
+		const relevantData = await getRelevantSubscriptionData(updatedSubscription);
+		return relevantData;
 	} catch (error: any) {
 		console.error("Error changing plan:", error);
 		throw new Error("Failed to change plan: " + error);
@@ -265,17 +276,14 @@ export async function upgradePlan(subscriptionId: string, newPriceId: string) {
 
 
 // Creates a subscription schedule that begins the new plan at the end of the current subscription period
-export async function downgradePlan(
-	subscriptionId: string,
-	newPriceId: string
-) {
+export async function downgradePlan(subscriptionId: string, newPriceId: string): Promise<Stripe.SubscriptionSchedule> {
 	try {
 		// Creates subscription schedule
 		const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
 		const subscriptionSchedule = await stripe.subscriptionSchedules.create({
 			from_subscription: subscriptionId,
-			end_behavior: "release",
+			// end_behavior: "release",
 		});
 
 		const newSubscriptionSchedule = await stripe.subscriptionSchedules.update(
@@ -308,6 +316,22 @@ export async function downgradePlan(
 		console.error("Failed to downgrade plan: " + error);
 		throw new Error("Failed to downgrade plan: " + error);
 	}
+}
+
+
+export async function getPriceDetails(priceId: string) {
+	const price = await stripe.prices.retrieve(priceId);
+
+	if (!price) {
+		throw new Error("Price not found: " + priceId);
+	}
+
+	return {
+		id: price.id,
+		unit_amount: price.unit_amount,
+		currency: price.currency,
+		product: price.product,
+	};
 }
 
 
@@ -360,12 +384,12 @@ export async function getCustomerPaymentIntents(customerId: string) {
 }
 
 
-export async function getPaymentPlans() {
-	return [
+export async function getPaymentPlans(): Promise<PaymentPlan[]> {
+	let data: PaymentPlan[] = [
 		{
 			name: "Manual Mode",
-			price: 12,
-			priceId: "price_1Rx6ewEl7NEhfNbPpIfwigfP",
+			priceId: "price_1S2LNzIzxhp1ZvnG7rqMW42c",
+			price: null,
 			features: [
 				"1 AirBNB listing",
 				"Weekly audit reports",
@@ -376,8 +400,8 @@ export async function getPaymentPlans() {
 		},
 		{
 			name: "Scrape Mode",
-			price: 15,
-			priceId: "price_1Rx7KOEl7NEhfNbPzOu3MWsu",
+			priceId: "price_1S2LOFIzxhp1ZvnGWXRAw2Wz",
+			price: null,
 			features: [
 				"Everything in Basic",
 				"Up to 3 AirBNB listings",
@@ -389,8 +413,8 @@ export async function getPaymentPlans() {
 		},
 		{
 			name: "PMS Starter",
-			price: 19,
-			priceId: "",
+			priceId: "price_1S2LP4Izxhp1ZvnGnsge8gKo",
+			price: null,
 			features: [
 				"Everything in Pro",
 				"24/7 VIP Support",
@@ -400,10 +424,17 @@ export async function getPaymentPlans() {
 		},
 		{
 			name: "PMS Pro",
-			price: 39,
-			priceId: "",
+			priceId: "price_1S2LPGIzxhp1ZvnGzmJOod4a",
+			price: null,
 			features: ["Everything in Premium", "Unlimited listings"]
 		},
 	]
+
+	for (let plan of data) {
+		const priceDetails = await getPriceDetails(plan.priceId);
+		plan.price = priceDetails.unit_amount ? priceDetails.unit_amount / 100 : 0;
+	}
+	
+	return data;
 }
 

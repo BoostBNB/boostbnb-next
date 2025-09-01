@@ -25,11 +25,7 @@ const CheckoutPage = () => {
 				setPlan(selectedPlan);
 		}
 
-		fetchPlan();
-
-		stripePromise.then(() => {
-			setIsLoading(false); // Set loading to false once Stripe is loaded and ready
-		});
+		fetchPlan().then(() => stripePromise.then(() => setIsLoading(false))); // Set loading to false once Stripe is loaded and ready
 	}, []);
 
 	return (isLoading ? (

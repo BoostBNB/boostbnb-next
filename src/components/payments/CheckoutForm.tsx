@@ -1,14 +1,28 @@
 "use client";
 // Lots of help from : https://docs.stripe.com/checkout/custom/quickstart?lang=node&client=react
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCheckout, PaymentElement } from "@stripe/react-stripe-js";
+import { getPriceDetails } from "@/actions/payments/stripe";
 
 const CheckoutForm = ({ plan }: { plan: any }) => {
 	const checkout = useCheckout();
 
 	const [message, setMessage] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
+	const [priceDetails, setPriceDetails] = useState<any>(null);
+
+	useEffect(() => {
+		const fetchPriceDetails = async () => {
+			if (plan.priceId) {
+				const details = await getPriceDetails(plan.priceId);
+				console.log("Details: ", details);
+				setPriceDetails(details);
+			}
+		};
+
+		fetchPriceDetails();
+	}, [plan.priceId]);
 
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
@@ -34,7 +48,7 @@ const CheckoutForm = ({ plan }: { plan: any }) => {
 		setIsLoading(false);
 	};
 
-	return (
+	return priceDetails && (
 		<form
 			onSubmit={handleSubmit}
 			className="w-full border-2 flex flex-col items-center"
@@ -44,7 +58,8 @@ const CheckoutForm = ({ plan }: { plan: any }) => {
 					BoostBNB {plan.name} Subsciption
 				</h1>
 				<h3 className="text-lg font-bold mb-5 bg-gray-300 p-2 w-fit">
-					${plan.price} /month
+					{/* ${priceDetails.unit_amount / 100} /month */}
+					${ plan.price } /month
 				</h3>
 
 				<h4>Payment</h4>

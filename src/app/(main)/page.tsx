@@ -5,6 +5,7 @@ import ProjectStats from "@/components/homepage/ProjectStats";
 import TextSection from "@/components/homepage/TextSection";
 import FeaturesSection from "@/components/homepage/FeaturesSection";
 import OverviewSection from "@/components/homepage/OverviewSection";
+
 /*
 Useful Links
 ------------------------
@@ -21,14 +22,17 @@ Useful Links
 
 Payment Processing
 ------------------------
-	- Finish Upgrade/Downgrade Plan Functionality
-	- Get the Actual Payment Plans and the features they include from Daniel
+	- Finish Upgrade/Downgrade/Cancel Plan Functionality
+		- Always check session status to confirm that a user's payment is still active (replace is_active with getSubscriptionDetails().status)
+	- Learn about prorations and invoices and how to use them in this application
+	- Allow user to update payment information for future payments
 	- Prompt for feedback after subscription cancellation
 	- Send Success Email after successful Payment is made and after subscription cancellation
 	- Make a paywall page/component to redirect to whenever a user tries to access a premium feature without a valid subscription.
+	- Get the Actual Payment Plans and the features they include from Daniel
 
 
-Backend Integration & Functionality
+SEO Optimization Functionality
 ------------------------------------------------
 	- Create Optimization Tools
 		1. Listing Optimizer (pricing/calendar, min-stay/gap-rule, title, description) (have copy-paste helpers)
@@ -44,33 +48,31 @@ Backend Integration & Functionality
 		- Add Listing Statistics in the Dashboard Page
 
 
-UI/UX Frontend Stuff
--------------------------------
-	- Dashboard Page
-		- Add Onboarding for new users
-	- Profile Page
-		- User Settings/Preferences
-
-
 The Last Stretch of MVP Development
 --------------------------------------
+	- Add Onboarding for new users
+	- Add User Settings/Preferences if necessary
+	- Database Updates
+		- Add updated_at and created_at columns to listings and subscriptions
+		- Change JSON columns to JSONB columns
+		- Add RLS Policies to database tables
 	- Ensure User Authentication Pages is working correctly (especially signup)
 	- Re-style the Website using AI (from Daniel's pictures) (make sure everything is responsive)
-	- Add RLS Policies to database tables
 	- Weekly Insights Newsletter
 	- Guardrails / Safety Check
 
 
 Future Improvements / Features
 ------------------------
-	- Improve Cohost AI Assistant
-		- Use Langchain & Vector DB to add context and memory
-		- Add support for multiple conversations
-		- Add support for image messages and possibly other file uploads
 	- EventIQ: Automatic pricing adjustment based on other events in the area (Dynamic Pricing)
 	- A/B Testing: Compare different listing versions to see which performs better (automatically alternate between versions and track performance)
 	- Drift Alerts: Notifies you when Airbnb is updated outside of boostbnb account
 	- Portfolio Policies / Bulk Actions: ???
+	- Redo Payment Processing with Stripe Webhooks (Possibly add a free trial)
+	- Improve Cohost AI Assistant
+		- Use Langchain & Vector DB to add context and memory
+		- Add support for multiple conversations
+		- Add support for image messages and possibly other file uploads
 */
 
 
