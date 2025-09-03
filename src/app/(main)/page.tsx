@@ -18,16 +18,14 @@ Useful Links
 		- Smoobu: 	https://docs.smoobu.com/?shell#third-party-providers 	(Uses Oauth 2.0; Requires Calling Smoobu to get approval)
 	- Prebuilt AirBNB Web-Scraping API: https://hasdata.com/apis/airbnb-api
 	- StackOverflow on Upgrading/Downgrading Subscription: https://stackoverflow.com/questions/69181605/best-way-to-handle-stripe-subscription-upgrade-and-downgrade
-
+	- About the Flat-Rate Pricing Model: https://docs.stripe.com/products-prices/pricing-models#flat-rate
 
 Payment Processing
 ------------------------
-	- Finish Upgrade/Downgrade/Cancel Plan Functionality
-		- Always check session status to confirm that a user's payment is still active (replace is_active with getSubscriptionDetails().status)
-	- Learn about prorations and invoices and how to use them in this application
-	- Allow user to update payment information for future payments
-	- Prompt for feedback after subscription cancellation
-	- Send Success Email after successful Payment is made and after subscription cancellation
+	- Finish Downgrade Plan Functionality
+	- Allow user to update payment information for future payments (add a page for user to enter new payment method details (Another checkout form with PaymentElement))
+	- Send Success Email after successful payment is made, after subscription cancellation, update, and renewal (see if we need to include invoice details)
+	
 	- Make a paywall page/component to redirect to whenever a user tries to access a premium feature without a valid subscription.
 	- Get the Actual Payment Plans and the features they include from Daniel
 

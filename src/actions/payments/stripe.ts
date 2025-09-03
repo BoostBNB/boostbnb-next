@@ -232,37 +232,20 @@ export async function stopCancellation(subscriptionId: string) {
 export async function upgradePlan(subscriptionId: string, newPriceId: string) {
 	try {
 		// Retrieve the subscription to get the current subscription item ID
-		const subscription = await stripe.subscriptions.retrieve(
-			subscriptionId
-		);
+		const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 		const currentItemId = subscription.items.data[0].id;
 
 		// Update the subscription with the new price
-		// const updatedSubscription = await stripe.subscriptions.update(
-		// 	subscriptionId,
-		// 	{
-		// 		items: [
-		// 			{
-		// 				id: currentItemId,
-		// 				price: newPriceId,
-		// 			},
-		// 		],
-		// 		// proration_behavior: "create_prorations", // Adjust proration behavior as needed
-		// 	}
-		// );
 		const updatedSubscription = await stripe.subscriptions.update(
 			subscriptionId,
 			{
 				items: [
 					{
 						id: currentItemId,
-						deleted: true
+						price: newPriceId,
 					},
-					{
-						price: newPriceId
-					}
 				],
-				// proration_behavior: "create_prorations", // Adjust proration behavior as needed
+				proration_behavior: "always_invoice"
 			}
 		);
 
@@ -280,6 +263,7 @@ export async function downgradePlan(subscriptionId: string, newPriceId: string):
 	try {
 		// Creates subscription schedule
 		const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+		const currentPeriodEnd = subscription.items.data[0].current_period_end;
 
 		const subscriptionSchedule = await stripe.subscriptionSchedules.create({
 			from_subscription: subscriptionId,
@@ -291,31 +275,42 @@ export async function downgradePlan(subscriptionId: string, newPriceId: string):
 			{
 				phases: [
 					{
+						start_date: subscription.items.data[0].current_period_start,
+          				end_date: currentPeriodEnd,
 						items: [
 							{
 								price: subscription.items.data[0].price.id,
-								quantity: 1,
 							},
 						],
-						iterations: 1
 					},
 					{
+						start_date: currentPeriodEnd,
 						items: [
 							{
 								price: newPriceId,
-								quantity: 1,
 							},
 						],
 					},
 				],
 			}
-		)
+		);
 
 		return newSubscriptionSchedule;
 	} catch (error: any) {
 		console.error("Failed to downgrade plan: " + error);
 		throw new Error("Failed to downgrade plan: " + error);
 	}
+}
+
+
+export async function createSetupIntent(customerId: string) {
+	const setupIntent = await stripe.setupIntents.create({
+		customer: customerId,
+		usage: "off_session",
+		payment_method_types: ["card"]
+	});
+
+	return setupIntent.client_secret;
 }
 
 
@@ -352,9 +347,12 @@ export async function getCustomerPaymentMethods(customerId: string) {
 
 	return paymentMethods.data.map((method) => ({
 		id: method.id,
-		created: new Date(method.created * 1000).toISOString(),
-		us_bank_account: method.us_bank_account,
+		created: method.created, //new Date(method.created * 1000).toISOString(),
+		type: method.type,
+		billing_details: method.billing_details,
 		metadata: method.metadata,
+		us_bank_account: method.us_bank_account,
+		card: method.card,
 	}));
 }
 
@@ -379,7 +377,7 @@ export async function getCustomerPaymentIntents(customerId: string) {
 		amount: intent.amount,
 		currency: intent.currency,
 		status: intent.status,
-		created: new Date(intent.created * 1000).toISOString(),
+		created: new Date(intent.created * 1000).toLocaleString(),
 	}));
 }
 
@@ -388,7 +386,7 @@ export async function getPaymentPlans(): Promise<PaymentPlan[]> {
 	let data: PaymentPlan[] = [
 		{
 			name: "Manual Mode",
-			priceId: "price_1S2LNzIzxhp1ZvnG7rqMW42c",
+			priceId: "price_1S2iEdIzxhp1ZvnGXD1IeWG3",
 			price: null,
 			features: [
 				"1 AirBNB listing",
@@ -400,7 +398,7 @@ export async function getPaymentPlans(): Promise<PaymentPlan[]> {
 		},
 		{
 			name: "Scrape Mode",
-			priceId: "price_1S2LOFIzxhp1ZvnGWXRAw2Wz",
+			priceId: "price_1S2iEtIzxhp1ZvnGK1dGoCjg",
 			price: null,
 			features: [
 				"Everything in Basic",
@@ -413,7 +411,7 @@ export async function getPaymentPlans(): Promise<PaymentPlan[]> {
 		},
 		{
 			name: "PMS Starter",
-			priceId: "price_1S2LP4Izxhp1ZvnGnsge8gKo",
+			priceId: "price_1S2iF7Izxhp1ZvnG1NIijk4a",
 			price: null,
 			features: [
 				"Everything in Pro",
@@ -424,7 +422,7 @@ export async function getPaymentPlans(): Promise<PaymentPlan[]> {
 		},
 		{
 			name: "PMS Pro",
-			priceId: "price_1S2LPGIzxhp1ZvnGzmJOod4a",
+			priceId: "price_1S2iFJIzxhp1ZvnGekgpP0TP",
 			price: null,
 			features: ["Everything in Premium", "Unlimited listings"]
 		},
