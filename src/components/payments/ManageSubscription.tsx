@@ -2,7 +2,7 @@
 
 import {
 	getSubscriptionDetails,
-	getCustomerPaymentMethods,
+	getDefaultPaymentMethod,
 	getCustomerPaymentIntents,
 	getPriceDetails,
 	upgradePlan,
@@ -15,6 +15,8 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import Link from "next/link";
+import { get } from "http";
 
 interface SubscriptionData {
 	user_id: string;
@@ -78,11 +80,12 @@ const ManageSubscription = () => {
 			const subscription = await getSubscriptionDetails(subData.subscription_id);
 			const priceDetails = await getPriceDetails(subscription.items[0].price.id);
 
-			const [paymentMethods, paymentIntents] = await Promise.all([
-				getCustomerPaymentMethods(subData.customer_id),
+			const [defaultPaymentMethod, paymentIntents] = await Promise.all([
+				getDefaultPaymentMethod(subData.subscription_id), // getCustomerPaymentMethods(subData.customer_id),
 				getCustomerPaymentIntents(subData.customer_id)
 			]);
 
+			const paymentMethods = [defaultPaymentMethod];
 			setStripeData({ subscription, paymentMethods, paymentIntents, priceDetails });
 		} catch (err: any) {
 			console.error("Error fetching data:", err);
@@ -527,6 +530,10 @@ const ManageSubscription = () => {
 						<p className="text-gray-500">No payment methods found.</p>
 					</div>
 				)}
+
+				<Link href="/payments/add-payment-method" className="p-3 border-1 text-black bg-blue-400 hover:bg-blue-300 hover:underline">
+					Add New Default Payment Method
+				</Link>
 			</div>
 
 			{/* Payment History */}

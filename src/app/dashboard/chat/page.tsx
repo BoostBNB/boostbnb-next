@@ -14,6 +14,10 @@ interface ChatMessage {
 	timestamp: Date;
 }
 
+function func() {
+
+}
+
 const ChatPage = () => {
 	const [message, setMessage] = useState("");
 	const [userInitials, setUserInitials] = useState("");

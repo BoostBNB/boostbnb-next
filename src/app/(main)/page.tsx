@@ -75,6 +75,7 @@ Future Improvements / Features
 
 
 export default function Home() {
+
 	return (
 			<main>
 				<Hero />

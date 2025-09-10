@@ -20,7 +20,7 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
 	const user = await getUser(supabase);
 
 	const plans = await getPaymentPlans();
-	const planName = plans.find((plan: any) => plan.priceId === priceId)?.name;
+	//const planName = plans.find((plan: any) => plan.priceId === priceId)?.name;
 
 	const session = await stripe.checkout.sessions.create({
 		ui_mode: "custom",
@@ -34,6 +34,12 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
 		customer_email: user.email,
 		metadata: {
 			userId: user.id,
+		},
+		payment_intent_data: {
+			setup_future_usage: 'off_session',
+		},
+		saved_payment_method_options: {
+			payment_method_save: 'enabled',
 		},
 		mode: "subscription",
 		return_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/payments/complete?session_id={CHECKOUT_SESSION_ID}`,
@@ -162,6 +168,8 @@ export async function getRelevantSubscriptionData(subscription: Stripe.Subscript
 			? new Date(subscription.canceled_at * 1000).toISOString()
 			: null,
 		cancellation_details: subscription.cancellation_details,
+		payment_settings: subscription.payment_settings,
+		default_payment_method: subscription.default_payment_method,
 	};
 }
 
@@ -276,7 +284,7 @@ export async function downgradePlan(subscriptionId: string, newPriceId: string):
 				phases: [
 					{
 						start_date: subscription.items.data[0].current_period_start,
-          				end_date: currentPeriodEnd,
+						end_date: currentPeriodEnd,
 						items: [
 							{
 								price: subscription.items.data[0].price.id,
@@ -314,6 +322,58 @@ export async function createSetupIntent(customerId: string) {
 }
 
 
+export async function getDefaultPaymentMethod(subscriptionId: string) {
+	const subscription = await getSubscriptionDetails(subscriptionId);
+	const paymentMethod = await stripe.paymentMethods.retrieve(
+		subscription.default_payment_method as string
+	);
+
+	return {
+		id: paymentMethod.id,
+		created: paymentMethod.created, //new Date(method.created * 1000).toISOString(),
+		type: paymentMethod.type,
+		billing_details: paymentMethod.billing_details,
+		metadata: paymentMethod.metadata,
+		us_bank_account: paymentMethod.us_bank_account,
+		card: paymentMethod.card,
+	};
+}
+
+
+export async function setDefaultPaymentMethod(customerId: string, subscriptionId: string, setupIntentId: string) {
+	try {
+		const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
+		const paymentMethodId = setupIntent.payment_method as string;
+
+		await stripe.customers.update(customerId, {
+			invoice_settings: {
+				default_payment_method: paymentMethodId
+			}
+		});
+
+		await stripe.subscriptions.update(subscriptionId, {
+			default_payment_method: paymentMethodId
+		});
+	}
+	catch (error: any) {
+		console.error("Error setting default payment method:", error);
+		throw new Error("Failed to set default payment method: " + error?.message);
+	}
+}
+
+
+export async function getCustomerInfo(customerId: string) {
+	const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer;
+	return {
+		id: customer.id,
+		email: customer.email,
+		name: customer.name,
+		created: new Date(customer.created * 1000).toISOString(),
+		invoice_settings: customer.invoice_settings,
+	};
+}
+
+
 export async function getPriceDetails(priceId: string) {
 	const price = await stripe.prices.retrieve(priceId);
 
@@ -332,8 +392,7 @@ export async function getPriceDetails(priceId: string) {
 
 export async function getCustomerPaymentMethods(customerId: string) {
 	const paymentMethods = await stripe.paymentMethods.list({
-		customer: customerId,
-		type: "card",
+		customer: customerId
 	});
 
 	if (!paymentMethods || paymentMethods.data.length === 0) {
@@ -432,7 +491,7 @@ export async function getPaymentPlans(): Promise<PaymentPlan[]> {
 		const priceDetails = await getPriceDetails(plan.priceId);
 		plan.price = priceDetails.unit_amount ? priceDetails.unit_amount / 100 : 0;
 	}
-	
+
 	return data;
 }
 
