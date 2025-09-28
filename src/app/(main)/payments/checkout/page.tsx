@@ -11,8 +11,8 @@ const stripePromise = loadStripe(
 	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-const CheckoutPage = () => {
-	const searchParams = useSearchParams();
+const CheckoutPage = ({ searchParams }: { searchParams: any }) => {
+	// const searchParams = useSearchParams();
 	const [isLoading, setIsLoading] = useState(true);
 	const [plan, setPlan] = useState<any>(null);
 

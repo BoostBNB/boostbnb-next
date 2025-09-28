@@ -50,10 +50,12 @@ export default function Hero() {
 			</div>
 
 			<div className="motion-preset-slide-up h-fit w-full motion-delay-1500">
-				<img
+				<Image
 					src="/assets/hero-image.png"
 					alt="Boostbnb Dashboard"
 					className="relative z-10 mx-auto aspect-video w-11/12 rounded-lg border-2 border-neutral shadow-hero md:w-1/2"
+					width={640}
+					height={360}
 				/>
 			</div>
 		</section>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 
 interface BoxProps {
 src: string;
@@ -12,7 +13,7 @@ function Box(input: BoxProps) {
   <div className="flex-grow rounded-xl border-1 border-gray-300 p-6">
     <h3 className="flex items-center space-x-2 font-bold">
       <div className="inline-block size-14 rounded-lg bg-black p-3 text-center text-white">
-        <img src={input.src} alt={input.alt} className="m-auto aspect-square w-11/12" />
+        <Image src={input.src} alt={input.alt} width={24} height={24} className="m-auto aspect-square w-11/12" />
       </div>
       <span>{input.title}</span>
     </h3>
@@ -55,7 +56,7 @@ export default function OverviewSection() {
   </div>
 
   <div className="mt-8 w-1/2">
-    <img className="h-[280px] w-full rounded-xl object-cover" src="/assets/pexels-nextvoyage-3051551.webp" alt="Team Meeting" />
+    <Image className="h-[280px] w-full rounded-xl object-cover" width={640} height={360} src="/assets/pexels-nextvoyage-3051551.webp" alt="Team Meeting" />
     <hr className="mx-auto my-2 w-0 opacity-0" />
     <div className="flex justify-center gap-2">
       <Box

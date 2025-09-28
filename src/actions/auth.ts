@@ -1,13 +1,13 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { User } from "@supabase/supabase-js";
+import { SupabaseClient, User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
 const emailRegex = /^[\w-\.+]+@([\w-]+\.)+[\w-]{2,8}$/;
 
 // Returns the current user or redirects to the login page
-export async function getUser(supabaseClient: any): Promise<User> {
+export async function getUser(supabaseClient: SupabaseClient): Promise<User> {
 	const { data: { user }, error } = await supabaseClient.auth.getUser();
 
 	if (error || !user) {

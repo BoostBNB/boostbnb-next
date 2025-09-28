@@ -1,3 +1,4 @@
+import Image from "next/image";
 
 interface BoxProps {
     src: string;
@@ -9,14 +10,14 @@ interface BoxProps {
 function Feature({ content }: { content: string }) {
   return (
 <span className="flex items-center gap-1 rounded-full bg-gray-200 px-4 py-2 text-gray-700"
-  ><img src="/icons/check_fill.svg" alt="mingcute:check_fill" /> {content}</span>
+  ><Image src="/icons/check_fill.svg" alt="mingcute:check_fill" width={24} height={24} /> {content}</span>
 )}
 
 function Box(input: BoxProps) {
   return (
 <div className="rounded-lg border-1 border-gray-300 p-6 shadow-sm">
   <div className="inline-block size-14 rounded-lg bg-black p-3 text-center text-white">
-    <img src={input.src} alt={input.alt} className="m-auto aspect-square w-11/12" />
+    <Image src={input.src} alt={input.alt} width={24} height={24} className="m-auto aspect-square w-11/12" />
   </div>
   <h3 className="mt-4 text-lg font-semibold">{input.title}</h3>
   <p className="mt-2 text-gray-600">{input.text}</p>

@@ -1,10 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getPaymentPlans } from "@/actions/payments/stripe";
 
 function Feature({ content }: { content: string }) {
 	return (
 		<div className="flex items-center gap-2">
-			<img src="/icons/check_fill.svg" alt="mingcute:check_fill" />
+			<Image src="/icons/check_fill.svg" alt="mingcute:check_fill" width={24} height={24} />
 			{content}
 		</div>
 	);

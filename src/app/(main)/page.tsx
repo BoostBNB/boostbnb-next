@@ -19,13 +19,11 @@ Useful Links
 	- Prebuilt AirBNB Web-Scraping API: https://hasdata.com/apis/airbnb-api
 	- StackOverflow on Upgrading/Downgrading Subscription: https://stackoverflow.com/questions/69181605/best-way-to-handle-stripe-subscription-upgrade-and-downgrade
 	- About the Flat-Rate Pricing Model: https://docs.stripe.com/products-prices/pricing-models#flat-rate
+	- Stripe Docs on Updating Payment Details: https://docs.stripe.com/payments/checkout/subscriptions/update-payment-details
 
 Payment Processing
 ------------------------
-	- Finish Downgrade Plan Functionality
-	- Allow user to update payment information for future payments (add a page for user to enter new payment method details (Another checkout form with PaymentElement))
 	- Send Success Email after successful payment is made, after subscription cancellation, update, and renewal (see if we need to include invoice details)
-	
 	- Make a paywall page/component to redirect to whenever a user tries to access a premium feature without a valid subscription.
 	- Get the Actual Payment Plans and the features they include from Daniel
 
@@ -48,8 +46,11 @@ SEO Optimization Functionality
 
 The Last Stretch of MVP Development
 --------------------------------------
+	- Deploy to Vercel (configure environment variables, custom domain, and email service)
 	- Add Onboarding for new users
-	- Add User Settings/Preferences if necessary
+	- Add User Settings/Preferences (change email/password, manage connected PMS accounts)
+
+	- Fix Linting/TypeScript Errors (as many as possible)
 	- Database Updates
 		- Add updated_at and created_at columns to listings and subscriptions
 		- Change JSON columns to JSONB columns
